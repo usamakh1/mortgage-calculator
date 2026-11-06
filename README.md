@@ -91,15 +91,17 @@ What the app does today is tracked story by story in [docs/user-stories.md](docs
 
 ## Transcripts
 
-The AI sessions are exported in [transcripts/](transcripts/) (overview: [transcripts/INDEX.md](transcripts/INDEX.md)), in order:
+The AI sessions are in [transcripts/](transcripts/) (overview: [transcripts/INDEX.md](transcripts/INDEX.md)), in order:
 
-| Session | File(s) | What happened |
-|---|---|---|
-| session-01 | not available | The chat that drafted the first versions of the four planning documents. It was not saved and could not be recovered. Its first prompt is quoted in session-02. |
-| session-02 | [session-02.md](transcripts/session-02.md) | A separate Claude Code session (Claude Opus 5.5) used to analyse the assignment, review the documents and plan the prompts for session-03. |
-| session-03 | [session-03.md](transcripts/session-03.md) | This session: the document fixes and the whole build. |
+| Session | Readable transcript | Plain export | What happened |
+|---|---|---|---|
+| session-01 | not available | not available | The chat that drafted the first versions of the four planning documents. It was not saved and could not be recovered. Its first prompt is quoted in session-02. |
+| session-02 | [session-02.md](transcripts/session-02.md) | [session-02.export.txt](transcripts/session-02.export.txt) | A separate Claude Code session (Claude Opus 5.5) used to analyse the assignment, review the documents, plan the prompts for session-03 and review its results. |
+| session-03 | [session-03.md](transcripts/session-03.md) | [session-03.export.txt](transcripts/session-03.export.txt) | This session: the document fixes and the whole build. |
 
-**Edits to the transcripts.** One GitHub token pasted by mistake was replaced with [REDACTED]. Session-03 ends with the reply to the "Final cleanup" message: the last four messages after it (and the replies to them) came after the work was finished and were left out. Nothing else was changed.
+**How they were made.** Each `session-0X.md` is generated from Claude Code's own session log by [scripts/transcript-to-markdown.mjs](scripts/transcript-to-markdown.mjs): every message and every tool call with its output, in order. It leaves out Claude's internal reasoning (as Claude Code's `/export` does), shortens long outputs and replaces screenshots with a note. Each `session-0X.export.txt` is the plain `/export` of the same session; the session-02 export was taken earlier in that session, so it ends sooner.
+
+**Edits.** One GitHub token pasted by mistake was replaced with [REDACTED] in every file. Session-03 ends with the reply to the "Final cleanup" message: the last four messages after it (and the replies to them) came after the work was finished and were left out. Nothing else was changed.
 
 ## Assumptions
 
