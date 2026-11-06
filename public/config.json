@@ -1,0 +1,35 @@
+{
+  "currency": "USD",
+  "locale": "en-US",
+  "officeName": "Riverside Mortgages",
+  "disclaimer": "Estimates only. Not a loan offer or financial advice.",
+  "defaults": {
+    "homePrice": 350000,
+    "downPayment": 50000,
+    "ratePercent": 6,
+    "termYears": 30,
+    "extraPayment": 0
+  },
+  "limits": {
+    "homePrice": { "min": 1, "max": 100000000 },
+    "ratePercent": { "min": 0, "max": 30 },
+    "termYears": { "min": 1, "max": 40 },
+    "extraPayment": { "min": 0, "max": 10000000 }
+  },
+  "presets": [
+    {
+      "id": "f30",
+      "name": "30-year fixed",
+      "ratePercent": 6.5,
+      "termYears": 30,
+      "description": "Our standard 30-year fixed-rate loan."
+    },
+    {
+      "id": "f15",
+      "name": "15-year fixed",
+      "ratePercent": 5.75,
+      "termYears": 15,
+      "description": "Higher monthly payment, much lower total interest."
+    }
+  ]
+}
