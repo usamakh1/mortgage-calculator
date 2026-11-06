@@ -101,7 +101,7 @@ The AI sessions are in [transcripts/](transcripts/) (overview: [transcripts/INDE
 
 **How they were made.** Each `session-0X.md` is generated from Claude Code's own session log by [scripts/transcript-to-markdown.mjs](scripts/transcript-to-markdown.mjs): every message and every tool call with its output, in order. It leaves out Claude's internal reasoning (as Claude Code's `/export` does), shortens long outputs and replaces screenshots with a note. Each `session-0X.export.txt` is the plain `/export` of the same session; the session-02 export was taken earlier in that session, so it ends sooner.
 
-**Edits.** One GitHub token pasted by mistake was replaced with [REDACTED] in every file. Session-03 ends with the reply to the "Final cleanup" message: the last four messages after it (and the replies to them) came after the work was finished and were left out. Nothing else was changed.
+**Edits.** One GitHub token pasted by mistake was replaced with [REDACTED], and one personal email address with [email removed], in every file. Session-03 ends with the reply to the "Final cleanup" message: the last four messages after it (and the replies to them) came after the work was finished and were left out. Nothing else was changed.
 
 ## Assumptions
 

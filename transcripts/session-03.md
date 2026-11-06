@@ -3048,7 +3048,7 @@ NO git identity
 <details><summary>Shell: Create the first git commit</summary>
 
 ```sh
-cd "/Users/dev/Desktop/Test Project Usama" && git add .gitignore .nvmrc docs index.html package.json package-lock.json public src tests tsconfig.json vite.config.ts && git -c user.name="Usama Khawaja" -c user.email="usamakhawaja.44@gmail.com" commit -q -F - <<'EOF'
+cd "/Users/dev/Desktop/Test Project Usama" && git add .gitignore .nvmrc docs index.html package.json package-lock.json public src tests tsconfig.json vite.config.ts && git -c user.name="Usama Khawaja" -c user.email="[email removed]" commit -q -F - <<'EOF'
 Add product docs, project setup and amortization engine
 
 - docs/: product plan, app roles, jobs to be done, user stories
@@ -3113,7 +3113,7 @@ Output:
 
 ### Claude · 19:00
 
-Understood, no more git. One thing you should know: the commit had already gone through before you interrupted. It's `81c6072`, with author "Usama Khawaja <usamakhawaja.44@gmail.com>" (the name was my guess), and `transcripts/` is not in it. I'll leave git alone from now on. If you'd rather not have the commit, run `rm -rf .git` yourself and it's gone.
+Understood, no more git. One thing you should know: the commit had already gone through before you interrupted. It's `81c6072`, with author "Usama Khawaja <[email removed]>" (the name was my guess), and `transcripts/` is not in it. I'll leave git alone from now on. If you'd rather not have the commit, run `rm -rf .git` yourself and it's gone.
 
 ## Extra column rule, added to user-stories.md Shared definitions
 > - **Schedule columns.** Payment is the full amount paid that month, including any extra. Extra payment = min(entered extra, max(0, Payment − regular payment)). So a reduced last payment shows 0.00, and a final rounding adjustment (for example 1,800.09 against a regular 1,798.65) is not an extra payment.

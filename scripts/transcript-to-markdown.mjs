@@ -4,7 +4,7 @@
  * Dev tooling only; not part of the app.
  *
  * Usage:
- *   node scripts/transcript-to-markdown.mjs <session.jsonl> <out.md> --title "…" [--stop-before "…"]
+ *   node scripts/transcript-to-markdown.mjs <session.jsonl> <out.md> --title "…" [--stop-before "…"] [--redact "text"]…
  *
  * - User messages and Claude's replies in order, each under its own heading.
  * - Every tool call (shell commands, file edits, browser steps) with its input and its output,
@@ -13,6 +13,8 @@
  *   that Claude Code injects into messages (system reminders, command caveats).
  * - --stop-before: stop at the first user message that starts with this text.
  * - Anything that looks like a GitHub token is replaced with [REDACTED].
+ * - --redact (repeatable): text to remove everywhere, e.g. a personal email address; it is
+ *   replaced with [email removed] if it looks like an email, otherwise with [REDACTED].
  */
 import { readFileSync, writeFileSync } from 'node:fs';
 
@@ -23,6 +25,7 @@ const option = (name) => {
 };
 const title = option('--title') ?? 'Session transcript';
 const stopBefore = option('--stop-before');
+const redactions = rest.flatMap((value, index) => (rest[index - 1] === '--redact' ? [value] : []));
 if (!input || !output) {
   console.error('Usage: node scripts/transcript-to-markdown.mjs <session.jsonl> <out.md> --title "…" [--stop-before "…"]');
   process.exit(1);
@@ -230,6 +233,9 @@ const header = [
 ];
 if (stopped) header.push(`This transcript ends before the user message starting "${stopBefore}"; the messages after it were left out.`, '');
 
-const text = (header.join('\n') + '\n' + out.join('\n')).replace(TOKEN, '[REDACTED]').replace(/[ \t]+$/gm, '') + '\n';
+let text = (header.join('\n') + '\n' + out.join('\n')).replace(TOKEN, '[REDACTED]').replace(/[ \t]+$/gm, '') + '\n';
+for (const secret of redactions) {
+  text = text.split(secret).join(secret.includes('@') ? '[email removed]' : '[REDACTED]');
+}
 writeFileSync(output, text);
 console.log(`${output}: ${userTurns} user messages, ${text.split('\n').length} lines${stopped ? ', stopped as requested' : ''}`);

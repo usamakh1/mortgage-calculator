@@ -6,7 +6,7 @@ Each session is here twice:
 - **`session-0X.md`, readable:** generated from Claude Code's own session log by [`scripts/transcript-to-markdown.mjs`](../scripts/transcript-to-markdown.mjs). It shows every message and every tool call (shell commands, file edits, browser checks) with its output; click a grey line to open it. Claude's internal reasoning is left out, as in Claude Code's `/export`; long outputs are shortened and screenshots replaced by a note.
 - **`session-0X.export.txt`, plain:** the session exported with Claude Code's `/export` command, as it looked in the terminal. The session-02 export was taken earlier in that session, so it ends sooner.
 
-One GitHub token pasted by mistake was replaced with [REDACTED] in every file. Session-03 ends with the reply to the "Final cleanup" message: the last four messages after it (and the replies to them) came after the work was finished and were left out. Nothing else was changed.
+One GitHub token pasted by mistake was replaced with [REDACTED], and one personal email address with [email removed], in every file. Session-03 ends with the reply to the "Final cleanup" message: the last four messages after it (and the replies to them) came after the work was finished and were left out. Nothing else was changed.
 
 | # | Readable | Plain export | Purpose |
 |---|---|---|---|

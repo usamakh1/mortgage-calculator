@@ -2329,7 +2329,7 @@ You don't need to give Claude a role like "act as a senior engineer". Your curre
 > this is the response(
 >
 >
-> Understood, no more git. One thing you should know: the commit had already gone through before you interrupted. It's 81c6072, with author "Usama Khawaja usamakhawaja.44@gmail.com" (the name was my guess), and transcripts/ is not in it. I'll leave git alone from now on. If you'd rather not have the commit, run rm -rf .git yourself and it's gone.
+> Understood, no more git. One thing you should know: the commit had already gone through before you interrupted. It's 81c6072, with author "Usama Khawaja [email removed]" (the name was my guess), and transcripts/ is not in it. I'll leave git alone from now on. If you'd rather not have the commit, run rm -rf .git yourself and it's gone.
 >
 > Extra column rule, added to user-stories.md Shared definitions
 >
