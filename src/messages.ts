@@ -2,7 +2,7 @@
  * Every user-facing text in the app lives here.
  * Error texts must match the Error messages table in docs/user-stories.md exactly.
  * Range messages take the numbers already formatted for the locale.
- * The remaining entries (E8, E9, E13–E20) are added with the steps that use them.
+ * The remaining entries (E13–E20) are added with the steps that use them.
  */
 export const APP_TITLE = 'Mortgage Calculator';
 
@@ -14,9 +14,30 @@ export const MESSAGES = {
   E5: (min: string, max: string) => `Enter a whole number of years between ${min} and ${max}.`,
   E6: (min: string, max: string) => `Enter an extra payment between ${min} and ${max}.`,
   E7: 'The loan amount is too small for this term.',
+  E8: 'Fix the highlighted fields to see your results.',
+  E9: 'Something went wrong. Your inputs are kept; please try again.',
   E10: 'Could not calculate this loan. Please check your inputs.',
   /** reason: "file not found", "invalid JSON", "not a JSON object" or "network error". */
   E11: (reason: string) => `Configuration could not be loaded (${reason}). Using default settings.`,
   /** list: problem names joined with ", ". */
   E12: (list: string) => `Some settings were invalid and defaults are used instead: ${list}.`,
+} as const;
+
+/** Labels and other interface text (not errors). */
+export const UI_TEXT = {
+  intro: 'See what a home loan costs each month and in total.',
+  formHeading: 'Loan details',
+  homePrice: 'Home price',
+  downPayment: 'Down payment',
+  interestRate: 'Interest rate (% per year)',
+  termYears: 'Loan term (years)',
+  resultsHeading: 'Your loan',
+  loanAmount: 'Loan amount',
+  monthlyPayment: 'Monthly payment',
+  monthlyPaymentNote: 'Principal and interest',
+  totalInterest: 'Total interest',
+  totalPaid: 'Total paid',
+  payoffDate: 'Payoff date',
+  dismiss: 'Dismiss',
+  errorMarker: '!',
 } as const;

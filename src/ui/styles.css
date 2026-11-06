@@ -1,0 +1,282 @@
+/* Mortgage Calculator: one column on phones, two from 760px. Colors meet WCAG AA contrast. */
+
+:root {
+  --bg: #f6f7f9;
+  --surface: #ffffff;
+  --text: #1b1f24;
+  --muted: #535c68;
+  --border: #c9d0d8;
+  --accent: #1d5fbf;
+  --accent-soft: #e8f0fc;
+  --error: #b3261e;
+  --error-soft: #fdecea;
+  --notice: #7a4b00;
+  --notice-soft: #fff4dc;
+  --focus: #1d5fbf;
+  --radius: 10px;
+  color-scheme: light;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --bg: #121417;
+    --surface: #1c2025;
+    --text: #e8eaed;
+    --muted: #a9b1bb;
+    --border: #3a414a;
+    --accent: #8ab4f8;
+    --accent-soft: #1f2a3a;
+    --error: #f2b8b5;
+    --error-soft: #3a1f1e;
+    --notice: #f6d28b;
+    --notice-soft: #33290f;
+    --focus: #8ab4f8;
+    color-scheme: dark;
+  }
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--text);
+  font-family: system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+  font-size: 1rem;
+  line-height: 1.5;
+}
+
+#app {
+  max-width: 960px;
+  margin: 0 auto;
+  padding: 16px;
+}
+
+h1 {
+  margin: 0;
+  font-size: 1.6rem;
+  line-height: 1.2;
+}
+
+h2 {
+  margin: 0 0 12px;
+  font-size: 1.1rem;
+}
+
+.intro {
+  margin: 4px 0 0;
+  color: var(--muted);
+}
+
+.site-header {
+  margin-bottom: 16px;
+}
+
+/* Config banner (A4) */
+.config-banner {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px 16px;
+  margin-bottom: 16px;
+  padding: 12px 16px;
+  border: 1px solid var(--notice);
+  border-radius: var(--radius);
+  background: var(--notice-soft);
+  color: var(--text);
+}
+
+.config-banner p {
+  flex: 1 1 240px;
+  margin: 0;
+  overflow-wrap: anywhere;
+}
+
+/* Layout */
+.layout {
+  display: grid;
+  gap: 16px;
+}
+
+@media (min-width: 760px) {
+  .layout {
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+    align-items: start;
+  }
+}
+
+.form-section,
+.results {
+  padding: 16px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  background: var(--surface);
+  min-width: 0;
+}
+
+/* Form */
+.loan-form {
+  display: grid;
+  gap: 12px;
+}
+
+.field label {
+  display: block;
+  margin-bottom: 4px;
+  font-weight: 600;
+}
+
+.field input {
+  width: 100%;
+  min-height: 44px; /* comfortable touch target */
+  padding: 8px 12px;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  background: var(--surface);
+  color: var(--text);
+  font: inherit;
+  font-variant-numeric: tabular-nums;
+}
+
+.field.has-error input {
+  border: 2px solid var(--error);
+}
+
+.field-error {
+  margin: 4px 0 0;
+  color: var(--error);
+  font-size: 0.95rem;
+}
+
+.field-error:empty {
+  display: none;
+}
+
+/* Text marker so errors never rely on color alone (L8.18) */
+.error-marker {
+  display: inline-grid;
+  place-items: center;
+  width: 1.25em;
+  height: 1.25em;
+  margin-right: 6px;
+  border-radius: 50%;
+  background: var(--error);
+  color: var(--surface);
+  font-weight: 700;
+  font-size: 0.85em;
+  vertical-align: 0.05em;
+}
+
+/* Results */
+.result-list {
+  display: grid;
+  gap: 12px;
+  margin: 0;
+}
+
+.result {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  gap: 0 12px;
+  padding-bottom: 12px;
+  border-bottom: 1px solid var(--border);
+}
+
+.result:last-child {
+  padding-bottom: 0;
+  border-bottom: 0;
+}
+
+.result dt {
+  color: var(--muted);
+}
+
+.result dd {
+  margin: 0;
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+  overflow-wrap: anywhere;
+}
+
+.result-monthly-payment {
+  padding: 12px;
+  border: 0;
+  border-radius: 8px;
+  background: var(--accent-soft);
+}
+
+.result-monthly-payment dt {
+  color: var(--text);
+  font-weight: 600;
+}
+
+.result-monthly-payment dd[data-result] {
+  font-size: 1.6rem;
+  line-height: 1.2;
+}
+
+.result-monthly-payment .result-note {
+  flex-basis: 100%;
+  color: var(--muted);
+  font-size: 0.9rem;
+  font-weight: 400;
+}
+
+.results-message {
+  margin: 0;
+  padding: 12px;
+  border-radius: 8px;
+  background: var(--error-soft);
+  color: var(--text);
+}
+
+/* Buttons */
+button {
+  min-height: 44px;
+  padding: 8px 16px;
+  border: 1px solid var(--accent);
+  border-radius: 8px;
+  background: var(--surface);
+  color: var(--accent);
+  font: inherit;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+button:hover {
+  background: var(--accent-soft);
+}
+
+/* Visible keyboard focus everywhere (L10.3) */
+:focus-visible {
+  outline: 3px solid var(--focus);
+  outline-offset: 2px;
+}
+
+.field input:focus-visible {
+  outline-offset: 1px;
+}
+
+/* Footer (A3) */
+.site-footer {
+  margin-top: 24px;
+  padding-top: 16px;
+  border-top: 1px solid var(--border);
+  color: var(--muted);
+  font-size: 0.9rem;
+}
+
+.site-footer p {
+  margin: 0 0 4px;
+  overflow-wrap: anywhere;
+}
+
+.office-name {
+  color: var(--text);
+  font-weight: 600;
+}
