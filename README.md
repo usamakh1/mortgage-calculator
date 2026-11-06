@@ -84,8 +84,21 @@ What the app does today is tracked story by story in [docs/user-stories.md](docs
 ## How it was built
 
 - **AI tool:** Claude Code, model Claude Opus 5.5. The full sessions are in [transcripts/](transcripts/).
+- **Planning:** a separate Claude Code session (session-02, also Claude Opus 5.5) analysed the assignment, reviewed the planning documents and planned the prompts for the build session (session-03).
 - **Code changed by hand:** none.
 - **Stack:** TypeScript (strict), Vite, Vitest with happy-dom. No UI framework, no runtime dependencies.
+
+## Transcripts
+
+The AI sessions are exported in [transcripts/](transcripts/), in order:
+
+| Session | File(s) | What happened |
+|---|---|---|
+| session-01 | not available | The chat that drafted the first versions of the four planning documents. It was not saved and could not be recovered. Its first prompt is quoted in session-02. |
+| session-02 | [session-02.md](transcripts/session-02.md) | A separate Claude Code session (Claude Opus 5.5) used to analyse the assignment, review the documents and plan the prompts for session-03. |
+| session-03 | [part 1](transcripts/session-03-part1.md) · [part 2](transcripts/session-03-part2.md) · [part 3](transcripts/session-03-part3.md) · [part 4](transcripts/session-03-part4.md) · [part 5](transcripts/session-03-part5.md) | This session: the document fixes and the whole build. It was exported in parts as it went, so later parts repeat the earlier conversation. |
+
+**Edits to the transcripts.** I pasted a GitHub token into session-03 by mistake. In parts 4 and 5 the token was replaced with `[REDACTED]`. In part 3 the rest of that message, including the token, was deleted. Nothing else in the transcripts was changed.
 
 ## Assumptions
 
