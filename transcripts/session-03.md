@@ -3020,7 +3020,10 @@
   git branch -M main                                                            
   git remote add origin https://github.com/usamakh1/mortgage-calculator-.git    
   git push -u origin main                                                       
-  ),    
+  ), make sure the u added username and email are only for this project not     
+  need to set globally and also this is my                                      
+  token([REDACTED]) use that to push anything     
+  when you need. strictly prohibited to update anythign related to git          
 
   Ran 1 shell command (ctrl+o to expand)
 
@@ -7942,3 +7945,1662 @@
   A5.4.
 
 ✻ Cogitated for 21s · done 8:59 PM
+
+❯ /export transcripts/session-03.md                                             
+  ⎿  Conversation exported to: /Users/dev/Desktop/Test Project
+     Usama/transcripts/session-03.md
+
+❯ /export transcripts/session-02.md                                             
+  ⎿  Conversation exported to: /Users/dev/Desktop/Test Project
+     Usama/transcripts/session-02.md
+
+❯ /export transcripts/raw/                                                      
+  ⎿  Conversation exported to: /Users/dev/Desktop/Test Project
+     Usama/transcripts/raw/.txt
+
+❯ Does role works?                                                              
+
+⏺ Before your question, one problem with those exports needs attention. Checking
+  what they did to the transcript files:
+
+  Ran 1 shell command (ctrl+o to expand)
+
+⏺ Your /export transcripts/session-02.md overwrote the original session-02 file,
+  which can be restored from commit cce2b32 with git restore 
+  transcripts/session-02.md. I'm also checking the new exports for the token,
+  read-only.
+
+  Ran 1 shell command (ctrl+o to expand)
+⏺ The token is back. The three new exports contain the full GitHub token in
+  plain text, because this conversation still holds the original message:
+  - transcripts/session-02.md (the overwritten one);
+  - transcripts/session-03.md;
+  - transcripts/raw/.txt.
+
+  Before you commit or push anything:
+  1. Revoke the token on GitHub (Settings → Developer settings → Personal access
+     tokens), if you haven't already. That's the only fix that really protects
+     your account.
+  2. Run git restore transcripts/session-02.md. That brings back the real
+     session-02, which never had the token.
+  3. In session-03.md and raw/.txt, replace the token with [REDACTED], then
+     check with grep -rE 'ghp_[A-Za-z0-9]{20,}' transcripts until it prints
+     nothing.
+
+  Nothing has been committed or pushed since then, so the token isn't in git
+  history. Keep it that way: don't run git add transcripts until step 3 is done.
+
+  Your question: do the roles work?
+
+  Yes, all three work, with one caveat (below). Each was tested automatically
+  and checked in a real browser during the build:
+
+  Role: Loanee
+  What works: Enter price, down payment, rate, term and extra payment. Results,
+    savings and the schedule update live. Errors are clear, and the CSV
+  downloads
+  Evidence: L1, L2, L3, L5, L8 Implemented: 321 unit tests, plus browser checks
+    in Chromium (desktop, 360 px, dark mode, a real CSV download)
+  ────────────────────────────────────────
+  Role: Manager
+  What works: "Loan product" fills the rate and term from the office's products
+    and shows the description. Editing the rate or term switches to "Custom"
+  Evidence: M1 Implemented: 26 UI tests, plus a real Chromium check (select
+    15-year fixed → 5.75 / 15 → $2,491.23)
+  ────────────────────────────────────────
+  Role: Admin
+  What works: Edit public/config.json for office name, currency/locale, limits,
+    defaults and products. Mistakes show a banner and fall back safely, and a
+    missing file says "file not found"
+  Evidence: A1–A4 Implemented: 95 config tests, plus a real dev-server check
+  with
+    config.json removed
+
+  The caveat: all of this was verified in Chromium only. Whether the roles work
+  in Chrome, Edge, Firefox and Safari depends on the manual check (L10), which
+  hasn't been done yet. If "does it work" means for a reviewer on their own
+  browser, the honest answer is: very likely, but not yet confirmed. The
+  README's "Try each role" section is the quickest way to see it for yourself,
+  in about 2 minutes per role.
+
+✻ Cogitated for 29s · done 9:09 PM
+
+❯ now push to remote region                                                     
+
+⏺ Before pushing I'm checking every commit in the history for the token. The
+  dangerous files are uncommitted, but I want proof:
+
+  Ran 1 shell command (ctrl+o to expand)
+
+⏺ All 11 commits are clean with no token matches in history, and the files still
+  holding the token are uncommitted, so the push won't send them. I'm renaming
+  the branch to main, adding the remote, and pushing next.
+
+  Ran 1 shell command (ctrl+o to expand)
+
+⏺ The push failed. Nothing was sent:
+  remote: Permission to usamakh1/mortgage-calculator-.git denied to 
+  usamabespoke.
+  fatal: … The requested URL returned error: 403
+  The cause: this Mac's saved GitHub login (in the macOS keychain) belongs to a
+  different account, usamabespoke, and that account has no write access to
+  usamakh1/mortgage-calculator-. I can't fix this without your credentials, and
+  I won't use the token from earlier.
+
+  What is set up: the branch is renamed to main, and the remote origin points at
+  your repo. So only authentication is left. Pick one and run it with ! so it
+  happens in this session:
+
+  1. Log in with GitHub CLI as usamakh1 (easiest, and the token never appears in
+     the chat):
+  ! gh auth login
+  ! gh auth setup-git
+  ! git push -u origin main
+  2. Push once with the right username. Git will ask for a password; paste a new
+     token there, not in the chat:
+  ! git push https://usamakh1@github.com/usamakh1/mortgage-calculator-.git main
+     Then ! git push -u origin main sets the upstream.
+  3. Or add usamabespoke as a collaborator on the repo (Settings →
+     Collaborators) and push again.
+
+  After the push, check that the README renders on GitHub and that the clone
+  command in "Run it" works.
+
+  What gets pushed: the 11 committed commits, which are token-free. Not pushed
+  are the uncommitted transcript files:
+  - session-03-part4.md and part5.md: clean, but the README links to them, so
+    commit them.
+  - session-02.md, session-03.md and raw/.txt: these contain the token. Restore
+    session-02.md with git restore transcripts/session-02.md, and redact the
+    other two before committing.
+
+✻ Crunched for 33s · done 9:09 PM
+
+❯ use this token to push [REDACTED]               
+
+⏺ You've explicitly asked me to use it, so I'll use it for this one push, in a
+  way that doesn't save it anywhere:
+  - it's passed only as a header on this single command (-c, not saved to git
+    config);
+  - the remote URL stays without the token;
+  - the keychain helper is switched off for this command, so nothing is stored.
+
+  Ran 1 shell command (ctrl+o to expand)
+
+⏺ Now confirming that the token wasn't stored anywhere in git and that GitHub
+  has the same commit as local:
+
+  Ran 1 shell command (ctrl+o to expand)
+
+⏺ The push worked. Your code is on GitHub at
+  https://github.com/usamakh1/mortgage-calculator-, on branch main, with all 11
+  commits. GitHub and your local copy point to the same commit (10eb937), and
+  main now tracks origin/main.
+
+  The token wasn't saved anywhere: not in .git/config, not in ~/.gitconfig, and
+  not in the remote URL. It was used for that one command only.
+
+  Please revoke this token now (GitHub → Settings → Developer settings →
+  Personal access tokens). It has been pasted into this chat twice, so any new
+  /export of this session will contain it in plain text. For future pushes, use
+  gh auth login as usamakh1 so the token never appears in the chat.
+
+  What's not on GitHub yet: the transcript files you haven't committed.
+  - session-03-part4.md and part5.md: clean. Commit and push them, because the
+    README links to them.
+  - session-02.md: overwritten by your export and now contains the token. Run
+    git restore transcripts/session-02.md to bring back the real planning
+    session.
+  - session-03.md, raw/.txt, and any later export: these contain the token.
+    Replace it with [REDACTED] before committing, and rename the hidden
+    raw/.txt.
+
+  Before each commit, check with grep -rE 'ghp_[A-Za-z0-9]{20,}' transcripts. It
+  must print nothing.
+
+  Still open: your browser check for L10 and a manual Network-panel check for
+  A5.4.
+
+✻ Baked for 29s · done 9:11 PM
+
+❯ how can i see roles on UI?                                                    
+
+⏺ You won't see "roles" as separate screens, tabs or logins in the UI. That's by
+  design: the app runs entirely in the browser with no server, so a login would
+  be fake security (anyone could bypass it in the developer tools). Each role
+  is a different way of using the same page:
+
+  Role: Loanee
+  Where it shows in the UI: The whole calculator: the Loan details form, Your 
+    loan results and the Amortization schedule
+  Try it: Change the home price, rate or term and watch the results update.
+  Enter
+    200 as Extra monthly payment to see the months and interest saved. Click
+    Download CSV
+  ────────────────────────────────────────
+  Role: Manager
+  Where it shows in the UI: The Loan product dropdown at the top of the form
+  Try it: Choose 15-year fixed: the rate (5.75) and term (15) fill in and a
+    description appears. Change the rate and it switches back to Custom
+  ────────────────────────────────────────
+  Role: Admin
+  Where it shows in the UI: No screen. The Admin works in public/config.json,
+  and
+    the results show up in the UI
+  Try it: Edit the file and reload the page (see below)
+
+  To see the Admin's effect, run npm run dev, edit public/config.json and
+  reload:
+  - "officeName": "Your Office": the name appears top right and in the footer.
+  - "currency": "EUR" and "locale": "de-DE": amounts show as 1.798,65 €, with €
+    after the input fields.
+  - Add a product to "presets": it appears in the Loan product dropdown.
+  - Add a bad product (for example "ratePercent": 35): a yellow banner at the
+    top names the problem.
+  - Remove every preset ("presets": []): the Loan product dropdown disappears,
+    and the page becomes the plain Loanee calculator.
+
+  Undo your edits afterwards. The README's "Try each role" section has the same
+  steps.
+
+  If you'd like the roles visible on the page, for example a short "Who is this
+  for" note or a label next to the Loan product dropdown saying it's for loan
+  officers, I can add one. That's a small UI change, and I'd add tests for it
+  like the other steps.
+
+✻ Sautéed for 9s · done 9:13 PM
+
+❯ from where let em know? [Image #22]                                           
+  ⎿  [Image #22]
+
+⏺ Everything on your screenshot is one page that all three roles share. Here's
+  where each role appears on it:
+
+  Loanee: everything below "Loan product".
+  - In the left card, the fields Home price, Down payment, Interest rate, Loan 
+    term and Extra monthly payment are what the Loanee fills in.
+  - The whole right card, Your loan ($1,798.65, totals, payoff date, the
+    principal-vs-interest bar), is the Loanee's answer.
+  - Below that (off your screenshot) is the Amortization schedule with Download 
+    CSV.
+
+  Manager: the "Loan product" dropdown at the top of the left card, currently
+  showing "Custom". Click it and choose 15-year fixed. The rate and term fill
+  in, and a description appears under the dropdown. That dropdown is the
+  Manager's feature: quoting from the office's own products.
+
+  Admin: the "Riverside Mortgages" badge (top right) and the dropdown's
+  contents. Neither is typed on the page; both come from public/config.json:
+  - "officeName": "Riverside Mortgages" → the badge top right, and the footer;
+  - "presets": [...] → the "30-year fixed" and "15-year fixed" entries in the
+    dropdown;
+  - "currency" / "locale" → the $ in the fields and how amounts are formatted;
+  - "defaults" → the starting values 350000 / 50000 / 6 / 30.
+
+  So the Admin's role shows on the page through what it configured. To see it in
+  action, change "officeName" in public/config.json to your own name, save, and
+  reload: the badge changes.
+
+  If you want this visible without explanation, I can add small role labels, for
+  example "For loan officers" under the Loan product dropdown and "Set by your
+  office" on the badge. Tell me if you want that.
+
+✻ Baked for 7s · done 9:14 PM
+
+❯ does we need to mentione danything sepcificly on UI for role. read the        
+  document agains and let me know                                               
+
+⏺ I'll check this against the documents rather than from memory: the assignment
+  rules you quoted at the start, plus our docs.
+
+  Ran 1 shell command (ctrl+o to expand)
+
+⏺ No. Nothing role-specific needs to appear on the UI. I checked all three
+  sources:
+
+  1. The assignment rules. For roles they ask only for the written description:
+  "A [role] is … They can … They must never …", and "A calculator may have one
+  role or several. Each role describes a real kind of person and explains how
+  their needs differ." That's a requirement on the App Roles document. Nothing
+  in the rules asks for role labels, a role switch or a login in the app.
+
+  2. Our own documents say the opposite of role screens, on purpose:
+  - app-roles.md line 7: "The Loanee and the Manager use the same screens… The
+    Admin never uses a special screen."
+  - app-roles.md line 69: "There is no admin screen, and none is needed."
+  - app-roles.md line 67 and product-plan.md §1: "Roles are responsibilities,
+    not logins", because a login in a browser-only app would be fake security.
+
+  3. The user stories: no acceptance criterion asks to show a role, a role name
+  or a role switch. I searched all 23 stories. Each role is visible through its
+  feature, and those features are tested:
+  - Loanee: the calculator (L1–L8);
+  - Manager: the "Loan product" selector (M1);
+  - Admin: the config file and its effects on the page (A1–A4).
+
+  So the app already matches what the documents say. Adding role labels now
+  would be a change that:
+  - isn't in any story. The assignment says "a story that serves no job does not
+    belong in the list", so it would need a new story and job first;
+  - would contradict the role document, which describes one shared screen.
+
+  What a reviewer needs is already in the README. "Who it is for" lists the
+  three roles, and "Try each role" says what each one does on the page. That's
+  the right place to explain roles, and it's done.
+
+  My recommendation: leave the UI as it is.
+
+✻ Cooked for 17s · done 9:19 PM
+
+❯ what the purpose of role now                                                  
+
+⏺ Roles here aren't a permission system. They're a design tool: they decide who 
+  the app is for, and from that, what gets built and what the app must never do.
+  Their purpose shows in what they produced:
+
+  1. They decided what to build. Each role's needs became jobs, the jobs became
+  stories, and the stories became features:
+
+  ┌─────────┬────────────────────────┬──────────────────────────────────────┐
+  │  Role   │          Need          │                Became                │
+  ├─────────┼────────────────────────┼──────────────────────────────────────┤
+  │         │ Understand what a loan │ Monthly payment, total interest,     │
+  │ Loanee  │  really costs          │ payoff date, schedule, extra         │
+  │         │                        │ payments (L1–L5)                     │
+  ├─────────┼────────────────────────┼──────────────────────────────────────┤
+  │         │ Quote fast and the     │ The Loan product selector, so        │
+  │ Manager │ same way as colleagues │ everyone uses the office's exact     │
+  │         │                        │ rates (M1)                           │
+  ├─────────┼────────────────────────┼──────────────────────────────────────┤
+  │         │ Make the app right for │ config.json for currency, products,  │
+  │ Admin   │  the office without    │ limits and disclaimer, plus safe     │
+  │         │ code                   │ fallback (A1–A4)                     │
+  └─────────┴────────────────────────┴──────────────────────────────────────┘
+
+  Without the Manager there'd be no product selector. Without the Admin,
+  everything would be hard-coded in USD with no disclaimer.
+
+  2. Their "must never" rules became hard limits in the code:
+  - Loanee: inputs must never leave the browser → no server, no tracking,
+    nothing stored (checked: only 4 requests, all to the app itself).
+  - Manager: figures never without the disclaimer → the disclaimer is always in
+    the footer, with a built-in default if config omits it.
+  - Admin: config text must never run as code → office name and disclaimer are
+    always shown as plain text (tested with <img onerror…>).
+
+  3. They explain the differences between users. A Loanee and a Manager use the
+  same screen for different reasons (confidence vs. speed and consistency),
+  which is why the selector is optional and starts on "Custom". That's exactly
+  what the assignment asks a role to explain: "how their needs differ from the
+  other roles."
+
+  4. They set priorities and scope. The Loanee is primary, so the Loanee stories
+  were built first. Manager features like printed quotes and share links were
+  cut as Stretch, because the core problem belongs to the Loanee.
+
+  In short, roles answer the question "for whom, and why?". Their effect is
+  visible in which features exist and what the app refuses to do, not as labels
+  on the screen.
+
+✻ Worked for 9s · done 9:20 PM
+
+❯ where these roles mentioned?                                                  
+
+⏺ I'll search the whole project so the list is complete:
+
+  Ran 1 shell command (ctrl+o to expand)
+
+⏺ The roles are written down in the documents and the README, not on the screen.
+  Here's where:
+
+  Where: docs/app-roles.md (the main one, 30 mentions)
+  What it says about the roles: Defines each role in the assignment's format ("A
+
+    Loanee is… They can… They must never…"), how their needs differ (a
+  comparison
+     table), and why roles are responsibilities, not logins
+  ────────────────────────────────────────
+  Where: docs/jobs-to-be-done.md (31)
+  What it says about the roles: Every job names its role in the heading, e.g.
+  J-1
+     (Loanee), J-9 (Manager), J-11 (Admin). The job-to-story map at the end has
+  a
+     Role column
+  ────────────────────────────────────────
+  Where: docs/user-stories.md (31)
+  What it says about the roles: Every story starts with its role: "As a Loanee,
+  I
+    want…", "As a Manager…", "As an Admin…". Story IDs follow the role too:
+    L1–L12, M1–M4, A1–A7
+  ────────────────────────────────────────
+  Where: docs/product-plan.md (14)
+  What it says about the roles: §1 names the primary user (Loanee), secondary
+    (Manager) and supporting (Admin), and how roles are enforced
+  ────────────────────────────────────────
+  Where: README.md (9)
+  What it says about the roles: "Who it is for" (a table of the 3 roles) and
+  "Try
+    each role" (what each one does in the app)
+  ────────────────────────────────────────
+  Where: Code
+  What it says about the roles: Only one comment, in src/config/schema.ts. Roles
+
+    aren't code concepts
+  ────────────────────────────────────────
+  Where: On screen
+  What it says about the roles: Nowhere, by design (see my previous answer)
+
+  The chain the assignment asks for runs through these files: role
+  (app-roles.md) → job (jobs-to-be-done.md, "J-1 (Loanee)") → story
+  (user-stories.md, "As a Loanee… Serves: J-1") → feature in the app. Every
+  story names its job, and every job names its role.
+
+  So a reviewer looking for the roles starts with docs/app-roles.md, and the
+  README's "Who it is for" section points them there in one line.
+
+✻ Sautéed for 13s · done 9:22 PM
+
+❯ Error-handling review. In src/main.ts the global error handlers are installed 
+  only after                                                                    
+  createApp() succeeds, so an exception during startup leaves a blank page.     
+  That breaks L8                                                                
+  ("the page never goes blank").                                                
+  1. Install the global handlers before createApp, and if startup fails, render 
+  E9 (or a                                                                      
+     minimal fallback message) into #app using textContent only.                
+  2. Add a test that makes createApp throw and checks that the page shows the   
+  message.                                                                      
+  3. List every other error path you can find (startup, config, input, engine,  
+  rendering,                                                                    
+     CSV download) and confirm each one shows a message instead of a blank page 
+  or a wrong                                                                    
+     result. Fix any gaps with a test first. Run all tests.                     
+
+⏺ Your diagnosis is right. Here's the current startup code:
+
+  Ran 1 shell command (ctrl+o to expand)
+
+⏺ Confirmed that if createApp throws, the .then rejects with no handler and #app
+  stays empty; I'm also moving startup into a testable startApp() function,
+  starting with tests.
+⏺ Write(tests/unit/bootstrap.test.ts)
+  ⎿  Wrote 110 lines to tests/unit/bootstrap.test.ts
+       1 // @vitest-environment happy-dom
+       2 import { afterEach, beforeEach, describe, expect, it, vi, type M
+         ockInstance } from 'vitest';
+       3 import { startApp } from '../../src/ui/bootstrap';
+       4 import { createApp } from '../../src/ui/app';
+       5 import { validateConfig } from '../../src/config/schema';
+       6 
+       7 const E9 = 'Something went wrong. Your inputs are kept; please t
+         ry again.';
+       8 const config = async () => validateConfig({});
+     … +102 lines (ctrl+o to expand)
+
+  Ran 1 shell command (ctrl+o to expand)
+
+⏺ The three click-handler tests fail as expected, since the errors escape
+  uncaught, while the rendering-failure test already passes thanks to update()'s
+  try block. I'm fixing the schedule's click handlers next.
+
+  Ran 1 shell command (ctrl+o to expand)
+
+⏺ Now the new startup module. It installs the global handlers first, and renders
+  a plain-text E9 fallback if anything fails before the app exists:
+
+⏺ Write(src/ui/bootstrap.ts)
+  ⎿  Wrote 78 lines to src/ui/bootstrap.ts
+       1 /**
+       2  * Starts the app so that the page never goes blank (L8.19):
+       3  * 1. the global error handlers are installed first, before conf
+         ig loading and createApp;
+       4  * 2. any failure before the app exists renders E9 into #app (pl
+         ain text only);
+       5  * 3. after startup, global errors go to the app, which shows E9
+          and keeps the inputs.
+       6  */
+       7 import { loadConfig as defaultLoadConfig } from '../config/loadC
+     … +72 lines (~3 KB) (ctrl+o to expand)
+
+⏺ Write(src/main.ts)
+  ⎿  Added 3 lines, removed 11 lines
+       1  import './ui/styles.css';
+       2 -import { loadConfig } from './config/loadConfig';              
+       3 -import { validateConfig } from './config/schema';              
+       4 -import { createApp, installGlobalErrorHandlers } from './ui/app
+         -';                                                             
+       2 +import { startApp } from './ui/bootstrap';                     
+       3  
+       6 -const root = document.querySelector<HTMLElement>('#app');      
+       7 -                                                               
+       8 -if (root) {                                                    
+       9 -  // loadConfig never rejects; the catch is defence in depth so
+         - the calculator always starts.                                 
+      10 -  loadConfig()                                                 
+      11 -    .catch(() => validateConfig({}))                           
+      12 -    .then((configResult) => installGlobalErrorHandlers(createAp
+         -p(root, configResult)));                                       
+      13 -}                                                              
+       4 +// startApp never rejects and never leaves the page blank (see 
+         +bootstrap.ts).                                                 
+       5 +void startApp(document.querySelector<HTMLElement>('#app'));    
+
+  Ran 1 shell command (ctrl+o to expand)
+
+⏺ All 333 tests pass, but one of my new tests is too weak, since it only checks
+  that something was logged. I'm changing it to confirm the E9 fallback is on
+  the page when the error fires.
+
+  Ran 1 shell command (ctrl+o to expand)
+
+⏺ The strengthened test works: with the handlers temporarily moved back after
+  createApp, both startup tests fail, and with the real code all 8 pass. I also
+  accidentally included a leftover git stash in that command, so I'm checking
+  that it changed nothing.
+
+  Ran 1 shell command (ctrl+o to expand)
+
+⏺ The stash was a no-op since the file was untracked, bootstrap.ts is intact,
+  and no stray backup exists. Now I'll check that the app still starts in a
+  browser, since main.ts changed.
+
+  Called playwright 2 times, ran 1 shell command (ctrl+o to expand)
+
+⏺ In a real browser the app starts normally ($1,798.65). An uncaught error
+  thrown afterwards shows E9 in the results, keeps the inputs, and logs to the
+  console. Cleaning up and committing:
+
+  Called playwright (ctrl+o to expand)
+
+⏺ Stop Task
+  ⎿  cd "/Users/dev/Desktop/Test Project Usama" && npm run build 2>&1 |
+     tail -1 && npx vite preview --port 4173 --strictPort · stopped
+
+  Ran 1 shell command (ctrl+o to expand)
+
+⏺ The blank-page bug is fixed, and two more gaps I found along the way are fixed
+  too. All 333 tests pass and the type check is clean. I committed it locally
+  as 4b1dccf and didn't push.
+
+  Startup fix
+
+  - New src/ui/bootstrap.ts (main.ts is now 3 lines that call it):
+    - The global error and unhandledrejection handlers are installed first,
+      before config loading and before createApp.
+    - If anything fails before the app exists, #app shows the app title and E9
+      ("Something went wrong. Your inputs are kept; please try again."), set as
+      plain text.
+    - After startup, global errors go to the app, which shows E9 in the results
+      and schedule and keeps the inputs.
+    - If showing the error itself fails, it falls back to the minimal page.
+    - If #app is missing, it creates one, so there's always somewhere to show
+      the message.
+
+  One wording compromise: E9's "Your inputs are kept" is slightly off at
+  startup, when there are no inputs yet. I used it so every message still comes
+  from the Error messages table. If you prefer a separate startup message, it
+  would be a new E21 in the table.
+
+  Tests: 8 new startup tests, written first; they failed until the module
+  existed. They cover:
+  - a normal start;
+  - createApp throwing → E9, and startApp doesn't reject;
+  - loadConfig rejecting → built-in defaults;
+  - an error fired while the app is being built → E9 is on screen at that
+    moment;
+  - an error while config is still loading;
+  - errors and rejected promises after startup;
+  - a missing #app;
+  - stop() removing the handlers.
+
+  I proved the key test is real: with the handlers moved back after createApp,
+  two tests fail.
+
+  Every error path
+
+  ┌─────────────────────────┬────────────────────┬───────────────────────────┐
+  │          Path           │ What the user sees │        Verified by        │
+  ├─────────────────────────┼────────────────────┼───────────────────────────┤
+  │ Startup: createApp      │ Title + E9 in #app │ bootstrap test            │
+  │ throws                  │                    │                           │
+  ├─────────────────────────┼────────────────────┼───────────────────────────┤
+  │ Startup: error while    │                    │                           │
+  │ config loads or the app │ E9 fallback        │ bootstrap tests           │
+  │  is built               │                    │                           │
+  ├─────────────────────────┼────────────────────┼───────────────────────────┤
+  │ Startup: #app missing   │ E9 fallback in the │ bootstrap test            │
+  │                         │  page              │                           │
+  ├─────────────────────────┼────────────────────┼───────────────────────────┤
+  │ Startup: JavaScript     │ The <noscript>     │ index.html                │
+  │ disabled                │ text in index.html │                           │
+  ├─────────────────────────┼────────────────────┼───────────────────────────┤
+  │ Config: missing (real   │ Calculator on      │ config tests, real dev    │
+  │ 404, or the HTML        │ defaults + E11     │ server (A4.1 fix)         │
+  │ fallback)               │ "file not found"   │                           │
+  ├─────────────────────────┼────────────────────┼───────────────────────────┤
+  │ Config: invalid JSON /  │                    │                           │
+  │ not an object / network │ Defaults + E11     │ config tests              │
+  │  error                  │                    │                           │
+  ├─────────────────────────┼────────────────────┼───────────────────────────┤
+  │ Config: bad fields, bad │ Valid parts        │                           │
+  │  presets, unknown keys  │ applied + E12      │ config tests              │
+  │                         │ listing each       │                           │
+  ├─────────────────────────┼────────────────────┼───────────────────────────┤
+  │ Config: validation code │ Defaults + E11     │ loadConfig catch-all,     │
+  │  itself throws          │                    │ test                      │
+  ├─────────────────────────┼────────────────────┼───────────────────────────┤
+  │ Input: empty,           │ Field message      │                           │
+  │ non-numeric, out of     │ (E1–E6) + E8 in    │ parse, validate, ui tests │
+  │ range, down ≥ price     │ results and        │                           │
+  │                         │ schedule           │                           │
+  ├─────────────────────────┼────────────────────┼───────────────────────────┤
+  │ Engine: loan too small  │                    │                           │
+  │ (payment 0.00, or no    │ E7, no figures     │ engine, ui tests          │
+  │ repayment)              │                    │                           │
+  ├─────────────────────────┼────────────────────┼───────────────────────────┤
+  │ Engine: non-finite or   │                    │                           │
+  │ negative value, bad     │ E10, no figures,   │ engine, ui tests          │
+  │ input reaching the      │ logged             │                           │
+  │ engine                  │                    │                           │
+  ├─────────────────────────┼────────────────────┼───────────────────────────┤
+  │ Engine: throws          │ E9, inputs kept    │ ui L8.19                  │
+  ├─────────────────────────┼────────────────────┼───────────────────────────┤
+  │ Rendering: results or   │ E9, nothing        │ new ui test               │
+  │ schedule can't be drawn │ half-drawn         │                           │
+  ├─────────────────────────┼────────────────────┼───────────────────────────┤
+  │ Schedule view switch    │ Was: an uncaught   │ new ui test (failed       │
+  │ fails                   │ error. Now: E9     │ first, fixed)             │
+  ├─────────────────────────┼────────────────────┼───────────────────────────┤
+  │ Download CSV fails      │ Was: an uncaught   │ new ui test (failed       │
+  │ (e.g. downloads         │ error. Now: E9     │ first, fixed)             │
+  │ blocked)                │                    │                           │
+  ├─────────────────────────┼────────────────────┼───────────────────────────┤
+  │                         │ The next input     │                           │
+  │ After any E9            │ change brings the  │ new ui test               │
+  │                         │ results back       │                           │
+  ├─────────────────────────┼────────────────────┼───────────────────────────┤
+  │ Any other uncaught      │                    │ bootstrap tests; real     │
+  │ error or rejected       │ E9 via the global  │ Chromium (an error thrown │
+  │ promise                 │ handlers           │  after startup showed E9, │
+  │                         │                    │  inputs kept)             │
+  └─────────────────────────┴────────────────────┴───────────────────────────┘
+
+  Gaps found and fixed:
+  1. The startup blank page, which you reported.
+  2. The schedule's Monthly/Yearly switch. Its handler ran outside any try; it
+     now catches its own errors.
+  3. Download CSV, the same problem. A blocked download would have been an
+     uncaught error with nothing on screen during startup.
+
+  No path left shows a blank page or a wrong result. There's one thing an app
+  can't detect: a browser that silently ignores a download. The click then does
+  nothing and no message appears. Nothing wrong is ever displayed, though.
+
+  Still pending from before:
+  - The overwritten transcripts/session-02.md: restore it with git restore 
+    transcripts/session-02.md.
+  - The token in session-03.md and raw/.txt.
+  - Your browser check (L10) and the manual Network check (A5.4).
+
+✻ Brewed for 3m 16s · done 9:36 PM
+
+❯ Change to M1, the loan product selector:                                      
+  - Put the rate and term fields directly after the "Loan product" selector.    
+  - When a product (e.g. "15-year fixed", "30-year fixed") is selected, rate    
+  and term show the                                                             
+    product's values and are locked (not editable). Under them, show: "Set by   
+  <product name>.                                                               
+    Choose Custom to change."                                                   
+  - When "Custom" is selected, rate and term are editable and keep their        
+  current values.                                                               
+  - Decide between disabled and readonly for accessibility (screen readers,     
+  focus, contrast)                                                              
+    and tell me why.                                                            
+    Update M1's acceptance criteria first (M1.4 changes, add G/W/T for the      
+  locked state and                                                              
+    switching back to Custom), show me the new criteria, then write the tests,  
+  then the code.                                                                
+    Check it in the browser at desktop and 360px, and run all tests.            
+
+⏺ First, the decision you asked for. I recommend readonly, not disabled:
+
+  ┌──────────┬─────────────────────────┬───────────────────────────────────┐
+  │          │        readonly         │             disabled              │
+  ├──────────┼─────────────────────────┼───────────────────────────────────┤
+  │          │ Stays in the Tab order, │ Removed from the Tab order.       │
+  │ Keyboard │  so keyboard users      │ Keyboard users skip it, and with  │
+  │  focus   │ reach the field and the │ it the explanation of why they    │
+  │          │  "Set by…" note         │ can't change the value            │
+  ├──────────┼─────────────────────────┼───────────────────────────────────┤
+  │          │ Read out the value and  │ Often read as                     │
+  │ Screen   │ "read-only", plus the   │ "dimmed/unavailable", and some    │
+  │ readers  │ note via                │ readers skip disabled fields when │
+  │          │ aria-describedby        │  browsing by form controls        │
+  ├──────────┼─────────────────────────┼───────────────────────────────────┤
+  │          │ We control the styling, │ Browsers grey disabled text,      │
+  │ Contrast │  so text stays at full  │ usually below 4.5:1, and WCAG     │
+  │          │ AA contrast             │ exempts disabled controls, so     │
+  │          │                         │ they're legitimately hard to read │
+  ├──────────┼─────────────────────────┼───────────────────────────────────┤
+  │          │ "This value applies,    │ "Not applicable now", which is    │
+  │ Meaning  │ but it's set            │ wrong: the rate is used in the    │
+  │          │ elsewhere", which is    │ calculation                       │
+  │          │ exactly the situation   │                                   │
+  └──────────┴─────────────────────────┴───────────────────────────────────┘
+
+  Now the docs first. The current M1:
+
+  Ran 1 shell command (ctrl+o to expand)
+
+⏺ With no presets configured, I'll keep the usual field order (price, down
+  payment, rate, term, extra) and only use the new order when the selector
+  appears, then update M1 and the README's Manager paragraph.
+
+  Ran 1 shell command (ctrl+o to expand)
+
+⏺ The criteria are updated. Now the tests: I'm replacing the old M1 block in
+  ui.test.ts, since M1.4's behaviour changed and M1.7 is renumbered to M1.8:
+
+  Ran 2 shell commands (ctrl+o to expand)
+
+⏺ 10 new tests are failing as expected, while M1.2, M1.3 and M1.8 still pass.
+  Next I'm changing the form, with field order, per-field lock state and
+  aria-describedby.
+
+  Ran 1 shell command (ctrl+o to expand)
+
+⏺ Now the app wiring. Reading the current form and preset section of app.ts:
+
+  Ran 2 shell commands (ctrl+o to expand)
+
+⏺ All 334 tests pass; next I'm styling locked fields so they read as set
+  elsewhere, with full-contrast text on a sunken background and a dashed border.
+
+  Ran 1 shell command (ctrl+o to expand)
+
+⏺ Every contrast pair passes, with locked values near 15:1 and the dashed border
+  between 3.4 and 3.9:1. Next I'll run a real browser, since happy-dom can
+  still set a readonly field's value and only a real browser shows that typing
+  and pasting are blocked.
+
+  Called playwright 8 times, ran 1 shell command (ctrl+o to expand)
+
+⏺ Typing and pasting both left the rate at 5.75 with the product still "15-year
+  fixed", and the field is readOnly rather than disabled. Next I'll check Tab
+  navigation and the desktop screenshot with the locked field focused.
+  Read 1 file, called playwright 4 times (ctrl+o to expand)
+
+⏺ Desktop view checks out: Tab reaches the locked rate field, the focus ring
+  shows, and the note sits under both fields (the highlighted "5.75" is leftover
+  from my paste test). Next I'm switching to Custom and testing at 360 px.
+
+  Read 1 file, called playwright 8 times (ctrl+o to expand)
+
+⏺ At 360 px in dark mode: no horizontal scroll, the locked fields are clearly
+  dashed with readable text, and the note wraps cleanly under them. Cleaning up
+  and committing:
+
+  Called playwright (ctrl+o to expand)
+
+⏺ Stop Task
+  ⎿  cd "/Users/dev/Desktop/Test Project Usama" && npx vite preview --port
+     4173 --strictPort · stopped
+
+  Ran 1 shell command (ctrl+o to expand)
+
+⏺ The M1 change is done. Choosing a loan product now fills and locks the rate
+  and term, and "Custom" unlocks them. All 334 tests pass, and I committed it
+  locally as 1c8f039 (not pushed). M1 stays Implemented, since every updated
+  criterion passes.
+
+  readonly vs disabled: I used readonly
+
+  - Focus: a readonly field stays in the Tab order, so keyboard users reach it
+    and hear why it's locked. A disabled field is skipped, along with its
+    explanation.
+  - Screen readers: they announce the value, "read-only", and the "Set by…" note
+    (linked with aria-describedby). Disabled fields are often read as "dimmed",
+    or skipped.
+  - Contrast: browsers grey out disabled text, usually below 4.5:1. Readonly
+    lets us keep full contrast: the locked values are about 15:1 in both themes.
+  - Meaning: the rate is used in the calculation; it's just set by the product.
+    "Disabled" would suggest the opposite.
+
+  New M1 criteria (in docs/user-stories.md)
+
+  1. With presets, the selector shows Custom, 30-year fixed and 15-year fixed,
+     with Custom selected. Rate and term come directly after it and are 
+     editable.
+  2. (unchanged) Choosing 15-year fixed → 5.75 / 15 → $2,491.23.
+  3. (unchanged) The product's description appears under the selector.
+  4. (changed) With 15-year fixed selected, typing or pasting into rate or term
+     leaves 5.75 and 15. Both are readonly (not disabled), reachable with Tab,
+     and under them is "Set by 15-year fixed. Choose Custom to change.", linked
+     with aria-describedby.
+  5. Changing price, down payment or extra payment keeps the product and the
+     lock.
+  6. (new) Choosing Custom unlocks both fields, keeps 5.75 / 15 and removes the
+     note. Then rate 6 → $2,531.57, and the selector stays on Custom.
+  7. (new) Switching from 30-year fixed to 15-year fixed changes the values to
+     5.75 / 15, keeps them locked, and updates the note.
+  8. With no presets, there's no selector and the usual field order (price
+     first), with everything editable and no note.
+
+  One decision for you: criterion 8's field order. Without the selector, I kept
+  the usual order instead of starting the form with the interest rate. Your
+  instruction ("directly after the selector") only applies when the selector
+  exists.
+
+  Tests and code
+
+  - Tests: written first. 10 failed until the code was in place: field order,
+    readonly vs disabled, focusability, the note and its aria-describedby,
+    Custom unlocking, switching products, plain-text names in the note.
+  - form.ts: setLocked(), plus aria-describedby that can point at both an error
+    message and the lock note.
+  - presets.ts: simpler. It now just reports the chosen product, or Custom.
+  - app.ts: handles the field order and the lock note.
+  - styles.css: the locked look (dashed border, sunken background).
+  - README: the Manager steps now describe the lock.
+
+  Checked in a real browser (Chromium)
+
+  - Typing: Backspace and "9" in the locked rate field changed nothing. A paste
+    attempt changed nothing either. The product stayed on 15-year fixed.
+  - Tab from the selector lands on the locked rate field, with a visible focus
+    ring.
+  - Custom unlocks the fields. Rate 6 gave $2,531.57, and the note disappeared.
+  - Desktop (light) and 360 px (dark): the note sits directly under rate and
+    term, the locked fields are clearly dashed, and the page doesn't scroll
+    sideways at 360 px.
+
+  Still pending from before: restore the overwritten transcripts/session-02.md,
+  redact the token in the new exports, and your manual browser and network
+  checks (L10, A5.4).
+
+✻ Worked for 4m 0s · done 9:41 PM
+
+❯ there a couple of changes do a appropriate commit according to that           
+
+⏺ I'll look at what changed and scan everything for the token before committing:
+
+  Ran 1 shell command (ctrl+o to expand)
+
+⏺ The token has been removed from every file. Before committing, I'm checking
+  whether session-02.md is the overwritten copy or the real planning session.
+
+  Ran 1 shell command (ctrl+o to expand)
+
+⏺ I'm leaving session-02.md out of this commit: the copy on disk is really
+  session-03 under the wrong name, and committing it would overwrite the real
+  session-02. Committing the rest now.
+
+  Ran 1 shell command (ctrl+o to expand)
+
+⏺ I made the commit, 05fe333 (local, not pushed): Add transcripts index and the 
+  full session-03 export
+  - transcripts/INDEX.md, your overview of the sessions;
+  - transcripts/session-03.md, the complete export of this session;
+  - transcripts/session-03-part4.md and part5.md, which the README links to.
+
+  I scanned the staged files for the token and found none.
+
+  Left out on purpose
+
+  - transcripts/session-02.md: the file on disk is a copy of this session (it
+    starts with "## Context…"), not the planning session. Pick one fix:
+    - The planning session has new content (your INDEX says the session-03
+      results were reviewed there): go to that Claude Code window and run
+      /export transcripts/session-02.md there. Then tell me and I'll scan it for
+      the token and commit it.
+    - Otherwise, restore the committed version: git restore 
+      transcripts/session-02.md.
+  - transcripts/raw/.txt: a hidden, unnamed third copy of this session. Delete
+    it, or rename it if you want it kept. Your INDEX mentions
+    raw/session-02.jsonl and raw/session-03.jsonl, which don't exist yet.
+
+  README and INDEX now disagree
+
+  Which files they list: the README's Transcripts table lists session-03 parts
+  1–5, while your INDEX lists only the complete session-03.md.
+
+  How they describe the token edit:
+  - INDEX: "unedited, except that one GitHub token… was replaced with
+    [REDACTED]."
+  - README: part 3 had the rest of that message deleted, not replaced.
+
+  The part 3 deletion is real, so INDEX's sentence isn't accurate for part 3.
+  Two ways to make them consistent:
+  1. Keep only session-03.md: delete parts 1–5 and make the README link to INDEX
+     and session-03.md. INDEX's sentence then becomes accurate, because
+     session-03.md was redacted by replacement.
+  2. Keep the parts: add a line to INDEX about the part 3 deletion.
+
+  I'd recommend option 1: fewer files, and one consistent statement. Tell me
+  which you prefer and I'll update the README. Removing the part files is up to
+  you.
+
+✻ Worked for 38s · done 9:43 PM
+
+❯ push that commit as wel                                                       
+
+⏺ First, the same safety check as last time: the commits about to go out must
+  not contain the token.
+
+  Ran 1 shell command (ctrl+o to expand)
+
+⏺ Three commits to push, and none contains the token. Trying a normal push
+  first:
+
+  Ran 1 shell command (ctrl+o to expand)
+
+⏺ The 403 is the same as before, because this Mac's saved login is the
+  usamabespoke account. I'll push using your token with a one-off method,
+  passing it only to that command and storing it nowhere.
+
+  Ran 1 shell command (ctrl+o to expand)
+
+⏺ I pushed the 3 commits, and GitHub now matches your local copy (05fe333).
+  Before pushing I checked them for the token and found none.
+  10eb937..05fe333  main -> main
+    4b1dccf  Never leave a blank page: install error handlers before startup
+    1c8f039  M1: lock rate and term while a loan product is selected
+    05fe333  Add transcripts index and the full session-03 export
+  The token was used for this one command only. It isn't stored in your git
+  config, the remote URL or the keychain.
+
+  The push succeeding means the token is still active. It has now appeared in
+  this chat three times, so any future export of this session will contain it
+  again. Please revoke it on GitHub (Settings → Developer settings → Personal
+  access tokens). For later pushes, run gh auth login as usamakh1 so no token
+  goes through the chat.
+
+  Not pushed, because they aren't committed:
+  - transcripts/session-02.md: still the wrong file, a copy of this session.
+    Export the real planning session from its own window, or run git restore 
+    transcripts/session-02.md.
+  - transcripts/raw/.txt: the hidden duplicate.
+
+  Still open: whether the README should list only session-03.md (as your INDEX
+  does) or parts 1–5, and your manual browser and network checks (L10, A5.4).
+
+✻ Sautéed for 37s · done 9:46 PM
+
+❯ Add the stories we would build next, all with "Status: Not implemented" and   
+  "Scope: Future". Follow the same rules as before: each story serves a job,    
+  each job names                                                                
+  a role, and jobs must not mention the app or any solution.                    
+  1. Jobs first (docs/jobs-to-be-done.md). Add new jobs where needed, for       
+  example:                                                                      
+     - Admin: only the people responsible can change products, rates and        
+  wording.                                                                      
+     - Manager: pick up the figures I gave a client when they come back days    
+  later.                                                                        
+     - Loanee: know what rates lenders offer right now, so the numbers are      
+  realistic.                                                                    
+  2. Stories (docs/user-stories.md), with Given/When/Then criteria              
+  including error cases:                                                        
+     - a backend API and saved client quotes (Manager)                        - 
+  sign-in / authentimins (expired session,wrong password)                       
+                                         - authorisation by rchange settings    
+  (accessdenied case)                                                           
+       - an in-app settingsson, plus an audit logof changes (Admin)             
+                                                - live market rates how the     
+  source and time, and fall back to                                             
+                   manual entry when (Loanee/Manager)                           
+  3. app-roles.md: how the "must never" rules would then be enforced by         
+  theserver.                                                                    
+  4. product-plan.md: a "Future architecture" section (backend, auth, data      
+  source, privacy),                                                             
+     stating clearly that the current submission stays fully local.     5.      
+  README status table: Not implemented.                                         
+     Show me the new jobs and story titles first; after my approval, write them 
+  in full.                                                                      
+
+⏺ Parts of your list were garbled in the paste, so here's how I'm reading items
+  2–5:
+  - Sign-in / authentication for Managers and Admins, with error cases for an
+    expired session and a wrong password.
+  - Authorisation by role: only Admins can change settings, with an
+    access-denied case.
+  - An in-app settings screen for Admins, plus an audit log of changes.
+  - Live market rates: show the source and the time, and fall back to manual
+    entry when they're unavailable. For the Loanee and the Manager.
+
+  I'm checking the existing jobs first, to avoid overlaps and pick the next
+  numbers:
+
+  Ran 1 shell command (ctrl+o to expand)
+
+⏺ Below are the proposed jobs and stories. Nothing has been written to the docs
+  yet.
+
+  New jobs (for docs/jobs-to-be-done.md)
+
+  Each one is written without mentioning the app or any solution.
+
+  ┌────────────┬────────────────────────────────────────────────────────────┐
+  │     ID     │                            Job                             │
+  ├────────────┼────────────────────────────────────────────────────────────┤
+  │            │ When our loan products, rates or required wording need to  │
+  │ J-15       │ change, I want only the people responsible for them to be  │
+  │ (Admin)    │ able to make the change, so I can be sure nobody alters    │
+  │            │ what clients are quoted by mistake or on purpose.          │
+  ├────────────┼────────────────────────────────────────────────────────────┤
+  │ J-16       │ When a figure we quoted turns out to be wrong, I want to   │
+  │ (Admin)    │ find out who changed which setting and when, so I can      │
+  │            │ correct it and show our compliance team what happened.     │
+  ├────────────┼────────────────────────────────────────────────────────────┤
+  │ J-17       │ When a client comes back days later to continue, I want to │
+  │ (Manager)  │  pick up exactly the figures I gave them, so I can carry   │
+  │            │ on without redoing the work or contradicting myself.       │
+  ├────────────┼────────────────────────────────────────────────────────────┤
+  │ J-18       │ When I keep figures for my clients, I want them seen only  │
+  │ (Manager)  │ by me and the colleagues who serve those clients, so I can │
+  │            │  protect my clients' privacy and keep their trust.         │
+  ├────────────┼────────────────────────────────────────────────────────────┤
+  │ J-19       │ When I'm working out what a loan will cost me, I want to   │
+  │ (Loanee)   │ know the rates lenders are offering right now, so I can    │
+  │            │ base my decision on realistic numbers.                     │
+  └────────────┴────────────────────────────────────────────────────────────┘
+
+  The in-app settings screen doesn't need a new job. It serves the existing J-11
+  (Admin): "…set our currency… in one place… without needing a developer".
+  Editing JSON is exactly what a non-technical Admin can't do.
+
+  New stories (for docs/user-stories.md)
+
+  All of these are Scope: Future, Status: Not implemented.
+
+  ID: M5
+  Title: Save a client quote and reopen it later
+  Role: Manager
+  Serves: J-17
+  Error cases in the criteria: Server unreachable (nothing lost locally, clear
+    message); quote not found; saving while inputs are invalid
+  ────────────────────────────────────────
+  ID: M6
+  Title: Sign in to reach saved client quotes
+  Role: Manager
+  Serves: J-18
+  Error cases in the criteria: Wrong password (no hint which part was wrong);
+  too
+    many attempts (temporary lock); session expired (sign in again, unsaved
+    inputs kept); another office's quote → access denied
+  ────────────────────────────────────────
+  ID: A8
+  Title: Sign in before changing settings
+  Role: Admin
+  Serves: J-15
+  Error cases in the criteria: Wrong password; session expired while editing
+    (changes not lost, sign in again); signing out
+  ────────────────────────────────────────
+  ID: A9
+  Title: Only Admins can change settings
+  Role: Admin
+  Serves: J-15
+  Error cases in the criteria: A signed-in Manager opens settings → "access
+    denied", no settings shown; a direct request to the API without the Admin
+    role → refused, nothing changed
+  ────────────────────────────────────────
+  ID: A10
+  Title: Change settings in the app instead of editing a file
+  Role: Admin
+  Serves: J-11
+  Error cases in the criteria: Invalid value (the same rules and messages as
+    config.json today, nothing saved); two Admins editing at once (the second is
+
+    told to reload, nothing overwritten)
+  ────────────────────────────────────────
+  ID: A11
+  Title: See a log of every settings change
+  Role: Admin
+  Serves: J-16
+  Error cases in the criteria: Who, when, old value and new value for each
+    change; the log can't be edited or deleted from the app; a Manager can't see
+
+    it (access denied)
+  ────────────────────────────────────────
+  ID: L13
+  Title: See today's market rates, with source and time
+  Role: Loanee
+  Serves: J-19
+  Error cases in the criteria: Rate source unavailable → manual entry still
+  works
+    and a message says so; rates older than a set age → marked out of date;
+  never
+     shown without the source and the time
+
+  Two choices you should know about:
+  1. Settings and the audit log are two stories (A10, A11), not one. They serve
+     different jobs (J-11 vs J-16), and each story names exactly one job.
+  2. Live rates (L13) is the Loanee's story only. A story has one role, and the
+     Manager also benefits through the same feature. If you want a Manager
+     version as well (for example, quoting "today's rate" with its source on a
+     quote), it needs its own job and story; tell me.
+
+  What else would change, once you approve
+
+  - app-roles.md: a "When there is a server" section. Each "must never" would
+    then be enforced on the server, not just in the browser. For example, role
+    checks on every API call rather than hidden buttons, and quotes only
+    readable by their office.
+  - product-plan.md: a "Future architecture" section covering backend,
+    authentication, rate data source and privacy. It will state that the current
+    submission stays fully local. It will also note a conflict: J-13 ("run at
+    no cost, keep data in-house") means any future backend must be one the
+    office hosts itself, not a paid third-party service.
+  - README status table: a "Future (Not implemented)" row listing L13, M5, M6
+    and A8–A11.
+  - The scope table in §2.2: a new Future tier.
+
+  Do you approve these jobs, stories and choices? Once you do, I'll write them
+  in full with Given/When/Then criteria.
+
+✻ Crunched for 40s · done 9:48 PM
+
+❯ yes                                                                           
+
+⏺ Writing them in full now. First I'll find the exact insertion points in each
+  document:
+
+  Ran 1 shell command (ctrl+o to expand)
+
+⏺ All the anchors are there. First, the jobs and the job-to-story map:
+
+  Ran 1 shell command (ctrl+o to expand)
+
+⏺ Now the seven stories and their error messages in user-stories.md:
+
+  Ran 1 shell command (ctrl+o to expand)
+⏺ Next, how the "must never" rules would be enforced on a server (app-roles.md),
+  the Future architecture section and scope tables (product-plan.md), and the
+  README status table:
+
+  Ran 1 shell command (ctrl+o to expand)
+
+⏺ Now the same mechanical checks as for the original documents: traceability,
+  Given/When/Then format, and no solution words in the job statements.
+
+  Ran 1 shell command (ctrl+o to expand)
+
+⏺ The story map checks out against all 30 stories and 19 jobs, with every
+  criterion in Given/When/Then form and all error messages E1–E31 referenced.
+  I'm committing this now.
+
+  Ran 1 shell command (ctrl+o to expand)
+
+⏺ I've added the Future stories to the docs and committed them locally as
+  98bec34 (not pushed).
+
+  Jobs added (docs/jobs-to-be-done.md)
+
+  Each has its "Today" and "What goes wrong" lines, and none mentions the app.
+  - J-15 (Admin): control who can change what we quote.
+  - J-16 (Admin): find out who changed a setting and when.
+  - J-17 (Manager): pick up where I left off with a client.
+  - J-18 (Manager): keep my clients' figures private.
+  - J-19 (Loanee): base my numbers on today's rates.
+
+  The job-to-story map is updated: J-11 now also lists A10, and rows were added
+  for J-15 to J-19.
+
+  Stories added (docs/user-stories.md)
+
+  All are Scope: Future, Status: Not implemented, with Given/When/Then criteria:
+
+  Story: L13 See today's market rates, with source and time
+  Serves: J-19
+  Error cases covered: Source unavailable, too slow (5 s), out of date, a rate
+    outside the limits; never shown without source and time; no user inputs in
+    the request
+  ────────────────────────────────────────
+  Story: M5 Save a client quote and reopen it later
+  Serves: J-17
+  Error cases covered: Server unreachable, quote not found, saving while inputs
+    are invalid, product changed since saving; only a client reference is stored
+  ────────────────────────────────────────
+  Story: M6 Sign in to reach saved client quotes
+  Serves: J-18
+  Error cases covered: Wrong password (doesn't say which part), lockout after 5
+    tries, expired session (inputs kept), another office's quote denied; the
+    calculator still works without signing in
+  ────────────────────────────────────────
+  Story: A8 Sign in before changing settings
+  Serves: J-15
+  Error cases covered: Wrong password, lockout, session expiring mid-edit (edits
+
+    kept), sign-out
+  ────────────────────────────────────────
+  Story: A9 Only Admins can change settings
+  Serves: J-15
+  Error cases covered: A Manager opening settings is denied; a direct API call
+  is
+    refused and logged; a role removed mid-session
+  ────────────────────────────────────────
+  Story: A10 Change settings in the app instead of editing a file
+  Serves: J-11
+  Error cases covered: Out-of-range values, invalid currency, duplicate product,
+
+    two Admins editing at once; markup stays plain text
+  ────────────────────────────────────────
+  Story: A11 See a log of every settings change
+  Serves: J-16
+  Error cases covered: Refused changes logged; no edit or delete; Managers
+    denied; paging
+
+  Error table: E21–E31 added, each marked "(Future)", so these stories also have
+  exact message texts.
+
+  Other documents
+
+  - app-roles.md: a new "When there is a server (Future)" table. For each role
+    it shows how the server would enforce the "must never" rule: role checks on
+    every request, office-scoped quotes, an append-only log, and still no Loanee
+    data on the server. It says plainly that hiding a button is only for
+    convenience.
+  - product-plan.md:
+    - a Future tier in the scope and result tables;
+    - a new §10 Future architecture, which opens with "This submission stays 
+      fully local";
+    - §10 covers a self-hosted backend (required by J-13, "no costs, data
+      in-house"), the same engine on server and browser, password hashing and
+      sessions, server-side authorisation, settings and change log, and a rates
+      source queried by the server, plus privacy.
+  - README status table: a new "Not implemented (Future, needs a server)" row,
+    linking to §10.
+
+  Checks
+
+  - Traceability: 30 stories, each serving a job of the same role; the map
+    matches the stories exactly; all 19 jobs have stories.
+  - Format: every criterion is in Given/When/Then form.
+  - Messages: E1–E31 are all referenced.
+  - Jobs: no solution words in any job statement (I checked for words like app,
+    server, sign-in, password, log, API).
+  - Statuses: none of the existing ones changed.
+
+  Still open:
+  - the wrong transcripts/session-02.md, and the hidden transcripts/raw/.txt
+    (both uncommitted);
+  - your manual browser and network checks (L10, A5.4);
+  - pushing this commit, when you want to.
+
+✻ Cogitated for 2m 38s · done 9:51 PM
+
+❯ Now do a proper commmit what the changes so far                               
+
+  Ran 1 shell command (ctrl+o to expand)
+
+⏺ I didn't make a new commit, because there's nothing correct left to commit.
+  Every change so far is already committed. The newest commit, 98bec34 (the
+  Future stories), is the only one not yet pushed.
+
+  Only two files remain uncommitted, and both would be wrong to commit as they
+  are:
+
+  File: transcripts/session-02.md
+  Problem: Still a copy of this session (it starts with "## Context…"), exported
+
+    under the wrong name. Committing it would replace the real planning session
+    in git with a duplicate of session-03.md, which contradicts your INDEX.md
+  and
+     the README.
+  ────────────────────────────────────────
+  File: transcripts/raw/.txt
+  Problem: A hidden file with no name, holding a third copy of this session. It
+    would be easy to miss and confusing for a reviewer.
+
+  Neither contains the token. I scanned the whole project and found none.
+
+  How to finish, depending on what you want:
+  1. Session-02 has new content you want to keep (your planning and review
+     session): open that Claude Code window and run /export 
+     transcripts/session-02.md there. Then tell me and I'll commit it.
+  2. The committed session-02 is fine as it is: run git restore 
+     transcripts/session-02.md.
+  3. For raw/.txt: delete it (rm transcripts/raw/.txt), or give it a proper
+     name, e.g. transcripts/raw/session-03.txt, if you want a raw copy included.
+
+  Once you've done that, tell me and I'll commit the result and push it together
+  with 98bec34.
+
+✻ Crunched for 12s · done 9:53 PM
+
+❯ push that commit as well                                                      
+
+  Ran 1 shell command (ctrl+o to expand)
+
+⏺ The commit is clean, but the normal push hits the same 403 (usamabespoke), so
+  I'll use the same one-off method as before:
+
+  Ran 1 shell command (ctrl+o to expand)
+
+⏺ I pushed it. GitHub now matches your local copy (98bec34):
+  05fe333..98bec34  main -> main
+    98bec34  Add Future stories for a server-based version (all Not implemented)
+  - Token check: I scanned the commit before pushing and found no token.
+  - Credentials: a normal push failed with the same 403 (usamabespoke), so I
+    used the one-off method again. The token isn't stored in your git config or
+    the remote URL.
+  - Still not pushed: the two uncommitted transcript files, session-02.md (still
+    the wrong copy) and raw/.txt. Fix those as described in my last message.
+
+  Revoke the token on GitHub. It still works, which means anyone with this
+  transcript can push to your repo. After that, gh auth login as usamakh1 will
+  let pushes work without a token in the chat.
+
+✻ Worked for 23s · done 9:53 PM
+
+❯ i have seen you add you commit as well, but i dont want that                  
+
+⏺ Understood. From now on, my commits won't include the Co-Authored-By: Claude …
+  line. I'll save that as a standing preference, and then check how many
+  existing commits carry it:
+
+  Ran 1 shell command (ctrl+o to expand)
+
+⏺ Done for the future: it's saved as a standing rule, so I won't add that line
+  to any commit again.
+
+  All 15 existing commits (the whole history on GitHub) already contain it.
+  Removing it means rewriting history:
+  - What changes: each commit message loses its last line. Files, authors
+    (usamakh1) and dates stay exactly the same.
+  - Every commit gets a new ID (hash) because the messages change. GitHub then
+    has to be force-pushed, which replaces the history there.
+  - Is that safe here? Yes: only you use this repo, so nobody else has copies to
+    break. The one risk is that a force-push can't be undone from GitHub's
+    side. I'd keep a backup branch locally first, so the old history can still
+    be restored if needed.
+
+  Should I rewrite the 15 commit messages without the Claude line and force-push
+  to GitHub? Answer yes or no. If no, only new commits will be clean, and the
+  existing 15 keep the line.
+
+✻ Churned for 16s · done 9:55 PM
+
+❯ Add a "Future bets" section to docs/product-plan.md. For each idea give: the  
+  role and job it                                                               
+  serves, the hypothesis ("we believe … will …"), how we would test it cheaply  
+  before building,                                                              
+  and the main risk. Ideas:                                                     
+  1. Understanding check: 2–3 questions after a result, with explanations (role 
+  success metric)                                                               
+  2. AI adviser where the model only explains and every number comes from the   
+  tested engine                                                                 
+  3. Life-event simulator (baby, job loss, rate rise at refinance)              
+  4. "Probability of trouble" from simulated rate paths                         
+  5. Couple mode: each person sets private limits; show only the options both   
+  accept                                                                        
+  6. Check a lender's offer: read the offer PDF on the device and flag          
+  mismatches                                                                    
+  7. Office consistency radar using anonymised input patterns (Manager/Admin)   
+  8. Settings preview: show which standard quotes change before publ(Admin)     
+  9. Cost in human terms (interest as years of rent, share of each payment)     
+     Then write ideas 1, 2 and 9 as full user stories (Not implemented, Scope:  
+  Future) with                                                                  
+     jobs and G/W/T criteria including error cases. Keep every job free of      
+  solutions.                                                                    
+
+⏺ Your last question to me is still open: whether to rewrite the 15 existing
+  commits without the Claude line. I won't touch history until you answer. Any
+  commit I make from now on has no Claude line.
+
+  For idea 9's criteria I need exact figures from the engine rather than
+  estimates. Computing them with the real engine:
+
+  Ran 2 shell commands (ctrl+o to expand)
+
+⏺ Loan figures for idea 9 are in: with the extra 200 a month, interest drops
+  from about 193 to about 143 months of payments, and the first month where
+  principal outpaces interest moves from payment 223 to payment 141. I'm now
+  writing the two new jobs and the three stories with their messages.
+
+  Ran 1 shell command (ctrl+o to expand)
+
+⏺ Now the "Future bets" section in the product plan, plus L14–L16 added to the
+  Future rows of the scope tables and README:
+
+  Ran 1 shell command (ctrl+o to expand)
+
+❯ skip that last qestion and update run according tot aht,                      
+  Add a "Future bets" section to docs/product-plan.md. For each idea give: the  
+  role and job it                                                               
+  serves, the hypothesis ("we believe … will …"), how we would test it cheaply  
+  before building,                                                              
+  and the main risk. Ideas:                                                     
+  1. Understanding check: 2–3 questions after a result, with explanations (role 
+  success metric)                                                               
+  2. AI adviser where the model only explains and every number comes from the   
+  tested engine                                                                 
+  3. Life-event simulator (baby, job loss, rate rise at refinance)              
+  4. "Probability of trouble" from simulated rate paths                         
+  5. Couple mode: each person sets private limits; show only the options both   
+  accept                                                                        
+  6. Check a lender's offer: read the offer PDF on the device and flag          
+  mismatches                                                                    
+  7. Office consistency radar using anonymised input patterns (Manager/Admin)   
+  8. Settings preview: show which standard quotes change before publ(Admin)     
+  9. Cost in human terms (interest as years of rent, share of each payment)     
+     Then write ideas 1, 2 and 9 as full user stories (Not implemented, Scope:  
+  Future) with                                                                  
+     jobs and G/W/T criteria including error cases. Keep every job free of      
+  solutions.                                                                    
+
+⏺ I'm leaving the history question alone, so the 15 existing commits stay and
+  new ones drop the Claude line. I'm carrying on with the Future bets task, and
+  I'll verify the unchecked figure in bet 8 against the engine next.
+
+  Ran 1 shell command (ctrl+o to expand)
+
+⏺ Both bet-8 figures are correct: 1,896.20 at 6.5% and 1,945.79 at 6.75%. The
+  bet doesn't say which rate change produces them, though, so I'll add that.
+  Then the commit, without the Claude line:
+
+  Ran 1 shell command (ctrl+o to expand)
+
+⏺ The Future bets are in and committed locally as db48e7c, with no Claude line
+  in the commit. Not pushed yet. As you asked, I skipped the history question:
+  the 15 earlier commits stay unchanged.
+
+  §11 Future bets (docs/product-plan.md)
+
+  Each of the nine ideas has who and which job it serves, a "we believe … will
+  …" hypothesis, a cheap test before building, and the main risk:
+
+  Bet: 1 Understanding check → L14
+  Serves: Loanee, J-20
+  Cheap test: Clickable prototype, 5–8 people, count correct answers
+  before/after
+  Main risk: Feels like a school test; mitigated by being optional, unscored,
+    unstored
+  ────────────────────────────────────────
+  Bet: 2 Plain-language adviser → L15
+  Serves: Loanee, J-21
+  Cheap test: "Wizard of Oz" (a person writes answers from engine output) + an
+    offline run on 100 scenarios to count invented numbers
+  Main risk: Invented numbers or advice; it conflicts with "inputs never leave
+    the device" unless it's opt-in each time
+  ────────────────────────────────────────
+  Bet: 3 Life-event simulator
+  Serves: Loanee, candidate job
+  Cheap test: 3 printed "what if" cards in 5 interviews
+  Main risk: Needs income data; false precision
+  ────────────────────────────────────────
+  Bet: 4 Probability of trouble
+  Serves: Loanee, candidate job
+  Cheap test: Back-test on historical rates + a comprehension test
+  Main risk: Model risk; reads as a forecast or advice
+  ────────────────────────────────────────
+  Bet: 5 Couple mode
+  Serves: Loanee, J-7
+  Cheap test: 5 couples with separate paper limit sheets
+  Main risk: Needs a server to share; trust between partners
+  ────────────────────────────────────────
+  Bet: 6 Check a lender's offer
+  Serves: Loanee, candidate job
+  Cheap test: Compare 10 redacted real offers by hand
+  Main risk: Misreading gives false reassurance
+  ────────────────────────────────────────
+  Bet: 7 Office consistency radar
+  Serves: Manager, J-8
+  Cheap test: Analyse anonymised spreadsheets from 2–3 offices
+  Main risk: Directly conflicts with the Loanee's and Admin's "must never" rules
+  ────────────────────────────────────────
+  Bet: 8 Settings preview
+  Serves: Admin, J-12
+  Cheap test: 3 Admins spot a wrong rate with/without a preview
+  Main risk: Low value if settings rarely change
+  ────────────────────────────────────────
+  Bet: 9 Cost in everyday terms → L16
+  Serves: Loanee, J-2
+  Cheap test: Five-second test, two versions of the results card
+  Main risk: Comparisons mislead if they use outside data; L16 uses only the
+    user's own figures
+
+  Candidate jobs: bets 3, 4 and 6 name candidate jobs inside the plan but aren't
+  added to the jobs document. Every job there must have a story, and those get
+  one only after their test succeeds.
+
+  New jobs (no solutions in either)
+
+  - J-20 (Loanee): "When I am about to commit to a loan for decades, I want to
+    be sure I really understand what I'm agreeing to, so I can decide with
+    confidence and avoid surprises later."
+  - J-21 (Loanee): "When I don't understand what the figures mean for my
+    situation, I want someone to explain them in plain words, so I can make my
+    own decision without depending on a salesperson."
+
+  Bet 9 serves the existing J-2 (understand the true total cost).
+
+  New stories (Scope: Future, Not implemented)
+
+  - L14 Check that I understood my loan (8 criteria):
+    - 3 questions whose answer options come from your own results;
+    - feedback marked by text, not colour alone;
+    - questions close if inputs change (E32);
+    - not available when the results show an error;
+    - 0% rate handled;
+    - keyboard and screen-reader support;
+    - nothing stored or sent.
+  - L15 Ask for a plain-language explanation of my figures (9 criteria):
+    - explicit consent showing exactly what would be sent;
+    - cancelling sends nothing;
+    - every number in an answer must match your results, or the answer is
+      blocked (E33), including when someone tries to slip a number in through
+      the question;
+    - no recommendations, and the disclaimer under every answer;
+    - service down or slow (E34);
+    - off unless the Admin turns it on;
+    - answers shown as plain text, nothing kept.
+  - L16 See my cost in everyday terms (9 criteria), with exact figures from the
+    engine:
+    - about 193 monthly payments of interest;
+    - $82.93 of every $100 in year 1 is interest;
+    - from payment 223 (June 2045), more goes to the loan than to interest;
+    - optional rent of 1,500 → 19 years and 4 months;
+    - extra 200 → 143 / $74.35 / payment 141;
+    - invalid rent → E35;
+    - a 0% rate and the maximum values handled.
+
+  Error table: E32–E35 added.
+
+  Checks
+
+  - Traceability: 33 stories, each serving a job of its own role, and the map
+    matches the stories. All 21 jobs have stories.
+  - Format: every criterion is in Given/When/Then form.
+  - Jobs: no solution words in any job statement (I also checked for AI, model,
+    question, chart).
+  - Figures: every figure in L16 and bet 8 was computed with the real engine.
+    That includes 1,896.20 → 1,945.79 for a rate change from 6.5% to 6.75%,
+    which I added to bet 8 so the example is complete.
+  - Tracking: the scope tables and the README status table list L14–L16 as
+    Future.
+
+  Still open:
+  - push db48e7c when you want;
+  - the wrong transcripts/session-02.md and hidden raw/.txt;
+  - your manual browser and network checks (L10, A5.4).
+
+✻ Cogitated for 2m 59s · done 10:02 PM
+
+❯ now push                                                                      
+
+  Ran 2 shell commands (ctrl+o to expand)
+
+⏺ I pushed it. GitHub now matches your local copy (db48e7c):
+  98bec34..db48e7c  main -> main
+    db48e7c  Add Future bets and three Future stories (understanding check, 
+  explanations, everyday cost)
+  - Checks: the commit contains no token and no Claude line.
+  - Credentials: a normal push failed with the same 403 (usamabespoke), so I
+    used the one-off method again. The token isn't stored in your git config.
+
+  I see you have transcripts/session-02.md open. It's still the copy of this
+  session (it starts with "## Context…"), so I've left it uncommitted, along
+  with raw/.txt. When you've exported the real session-02 from its own window
+  (or run git restore transcripts/session-02.md), tell me and I'll commit and
+  push it.
+
+  Please also revoke the token on GitHub: it still works. Use gh auth login as
+  usamakh1 for future pushes.
+✻ Crunched for 27s · done 10:05 PM
+
+❯ Correction: earlier I wrote that I had checked steps 1–13 and the schedule by 
+  hand. That was                                                                
+  not accurate; I did not do those manual checks. The statuses don't rely on    
+  them.                                                                         
+                                                                                
+  Final cleanup:                                                                
+  1. If the repo was renamed to                                                 
+  https://github.com/usamakh1/usama-khawaja-calculator, update the              
+     git remote and the README clone commands.                                  
+  2. Delete transcripts/session-03-part*.md. In README and                      
+  transcripts/INDEX.md, link only                                               
+     session-02.md and session-03.md, and make the note say: "One GitHub token  
+  pasted by                                                                     
+     mistake was replaced with [REDACTED]; nothing else was changed." Remove    
+  the raw-logs                                                                  
+     paragraph from INDEX.md.                                                   
+
+⏺ Thanks for the correction. I've checked what the docs say, and the statuses
+  don't rely on your manual checks:
+  - L10 and A5 are Not implemented, and their notes say plainly that the manual
+    checks haven't been done.
+  - The README says "Browser check (L10): not yet done by hand", and calls the
+    network check "Chromium … through Playwright".
+  - Every Implemented story rests on automated tests plus my Chromium checks,
+    never on your reports.
+
+  Your earlier message stays in the transcript as it was written, and your
+  correction here is in the transcript too. That's the honest record.
+
+  Now the cleanup. First, has the repository been renamed?
+
+  Ran 1 shell command (ctrl+o to expand)
+
+⏺ The repo usama-khawaja-calculator returns 404, so it wasn't renamed; I'm
+  leaving the remote and README clone commands alone. session-02.md is back to
+  the real planning session with a clean working tree, and transcript cleanup is
+  next.
+
+  Ran 1 shell command (ctrl+o to expand)
+
+⏺ Before I write the user's note into both files, I'm checking it against what's
+  left, and I'm also verifying INDEX.md's claim that each session-03 result was
+  pasted back into session-02 for review.
+
+  Ran 1 shell command (ctrl+o to expand)
+
+⏺ Both remaining files check out against the redaction note: session-03.md has 8
+  [REDACTED] markers and no leftover token, and session-02.md never had the
+  token. One claim in INDEX.md is wrong, though: it says each session-03 result
+  was pasted back for review, but session-02.md has no review of A4.1 or Future
+  bets. I'm making only the requested edits and will flag this rather than
+  change it.
+
+  Ran 1 shell command (ctrl+o to expand)
+
+⏺ No references to the part files or raw logs remain. Committing without the
+  Claude line; I won't push unless you ask:
+
+  Ran 1 shell command (ctrl+o to expand)
+
+⏺ The cleanup is committed locally as 125adb7, with no Claude line. Not pushed.
+
+  1. Repo rename: not needed. usama-khawaja-calculator doesn't exist (404,
+     "Repository not found"), and mortgage-calculator- still answers directly
+     without redirecting. So the remote and the README clone commands stay as
+     they are. If you do rename it later, tell me and I'll update both.
+  2. Transcripts:
+     - Deleted session-03-part1.md to part5.md. transcripts/ now holds INDEX.md,
+       session-02.md and session-03.md.
+     - The README's Transcripts table links only session-02.md and
+       session-03.md, plus a link to INDEX.md.
+     - Both files now carry the note exactly: "One GitHub token pasted by
+       mistake was replaced with [REDACTED]; nothing else was changed."
+     - I checked it's accurate: session-03.md has 8 [REDACTED] and no token, and
+       session-02.md never contained one.
+     - The raw-logs paragraph is removed from INDEX.md.
+
+  Two things to check before you submit:
+  - INDEX.md says session-02 holds reviews it doesn't contain. The table row
+    says "Each result from session 03 was pasted back here for review", and
+    reading-order step 3 says the same. But session-02.md ends at your prompt "i
+    have exported" and has no reviews of the build steps (0 mentions of A4.1 or
+    Future bets). Either export the fuller session-02 from its own window if it
+    exists, or I can remove those two claims. Tell me which.
+  - session-03.md is incomplete. It was exported at 21:42 and ends at "this is
+    my repo git remote add origin", so everything after that (Future stories,
+    bets, pushes, this cleanup) is missing. Before submitting, run /export 
+    transcripts/session-03.md again. The new export will contain the token
+    again, in your messages and in my push commands, so replace every occurrence
+    with [REDACTED] and check that grep -rE 'ghp_[A-Za-z0-9]{20,}' transcripts
+    prints nothing before committing.
+
+  Then say "push" and I'll push the cleanup and the final transcripts together.
+
+✻ Baked for 1m 6s · done 10:13 PM
+

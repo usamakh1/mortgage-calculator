@@ -99,7 +99,7 @@ The AI sessions are exported in [transcripts/](transcripts/) (overview: [transcr
 | session-02 | [session-02.md](transcripts/session-02.md) | A separate Claude Code session (Claude Opus 5.5) used to analyse the assignment, review the documents and plan the prompts for session-03. |
 | session-03 | [session-03.md](transcripts/session-03.md) | This session: the document fixes and the whole build. |
 
-**Edits to the transcripts.** One GitHub token pasted by mistake was replaced with [REDACTED]; nothing else was changed.
+**Edits to the transcripts.** One GitHub token pasted by mistake was replaced with [REDACTED]. Session-03 ends with the reply to the "Final cleanup" message: the last four messages after it (and the replies to them) came after the work was finished and were left out. Nothing else was changed.
 
 ## Assumptions
 

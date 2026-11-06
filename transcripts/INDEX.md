@@ -1,7 +1,7 @@
 # AI session transcripts
 
 All work was done with **Claude Code**, model **Claude Opus 5.5**, on 6 November 2026.
-Each transcript is exported with Claude Code's own `/export` command. One GitHub token pasted by mistake was replaced with [REDACTED]; nothing else was changed.
+Each transcript is exported with Claude Code's own `/export` command. One GitHub token pasted by mistake was replaced with [REDACTED]. Session-03 ends with the reply to the "Final cleanup" message: the last four messages after it (and the replies to them) came after the work was finished and were left out. Nothing else was changed.
 
 | # | File | Purpose |
 |---|---|---|
