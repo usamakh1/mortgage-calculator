@@ -412,6 +412,40 @@ describe('L. loadConfig fetch wrapper (A4.1, A4.2, A4.7)', () => {
     );
   });
 
+  const respondWith =
+    (body: string, contentType: string | null): FetchLike =>
+    async () => ({
+      ok: true,
+      status: 200,
+      headers: { get: (name: string) => (name.toLowerCase() === 'content-type' ? contentType : null) },
+      text: async () => body,
+    });
+  const HTML = '<!doctype html>\n<html lang="en"><head><title>Mortgage Calculator</title></head></html>';
+  const NOT_FOUND = 'Configuration could not be loaded (file not found). Using default settings.';
+
+  it('A4.1 defence: an HTML page with status 200 (single-page-app fallback) → "file not found"', async () => {
+    const result = await loadConfig(respondWith(HTML, 'text/html; charset=utf-8'));
+    expect(result.config).toEqual(DEFAULT_CONFIG);
+    expect(result.notice?.text).toBe(NOT_FOUND);
+  });
+
+  it('A4.1 defence: an HTML body without a content type is also "file not found"', async () => {
+    expect((await loadConfig(respondWith(`  ${HTML}`, null))).notice?.text).toBe(NOT_FOUND);
+  });
+
+  it('valid JSON is still accepted as application/json, text/plain or with no content type', async () => {
+    for (const type of ['application/json', 'application/json; charset=utf-8', 'text/plain', null]) {
+      const result = await loadConfig(respondWith(JSON.stringify({ currency: 'EUR' }), type));
+      expect(result.notice).toBeNull();
+      expect(result.config.currency).toBe('EUR');
+    }
+  });
+
+  it('broken JSON that is not HTML is still "invalid JSON"', async () => {
+    const result = await loadConfig(respondWith('{bad json', 'application/json'));
+    expect(result.notice?.text).toBe('Configuration could not be loaded (invalid JSON). Using default settings.');
+  });
+
   it('L6: requests ./config.json with cache "no-store"', async () => {
     const fetchSpy = vi.fn<FetchLike>(respond(200, '{}'));
     await loadConfig(fetchSpy);
