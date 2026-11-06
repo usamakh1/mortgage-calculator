@@ -45,6 +45,27 @@ function enter(values: Partial<Record<Field, string>>): void {
   for (const [field, value] of Object.entries(values)) type(field as Field, value);
 }
 
+/** Rows of the table on the current schedule page. */
+const pageRows = (): string[][] =>
+  [...root.querySelectorAll('.schedule tbody tr')].map((tr) => [...tr.children].map((td) => td.textContent ?? ''));
+const pagerButton = (which: 'prev' | 'next'): HTMLButtonElement | null =>
+  root.querySelector<HTMLButtonElement>(`.schedule [data-page="${which}"]`);
+const pagerStatus = (): string => root.querySelector('.schedule .pager-status')?.textContent ?? '';
+const isUnavailable = (button: HTMLButtonElement | null): boolean => button?.getAttribute('aria-disabled') === 'true';
+
+/** Every row of the schedule, collected page by page from page 1 (leaves the last page shown). */
+function allScheduleRows(): string[][] {
+  let guard = 0;
+  while (pagerButton('prev') && !isUnavailable(pagerButton('prev')) && guard++ < 100) pagerButton('prev')!.click();
+  const rows = [...pageRows()];
+  guard = 0;
+  while (pagerButton('next') && !isUnavailable(pagerButton('next')) && guard++ < 100) {
+    pagerButton('next')!.click();
+    rows.push(...pageRows());
+  }
+  return rows;
+}
+
 describe('Form prefilled from config defaults (A1.2)', () => {
   it('built-in defaults: 350000 / 50000 / 6 / 30 with results shown', () => {
     start();
@@ -411,8 +432,7 @@ describe('5d design: header, adornments, principal vs. interest bar', () => {
 });
 
 describe('Schedule (L3)', () => {
-  const tableRows = (): string[][] =>
-    [...root.querySelectorAll('.schedule tbody tr')].map((tr) => [...tr.children].map((td) => td.textContent ?? ''));
+  const tableRows = allScheduleRows;
   const headers = (): string[] => [...root.querySelectorAll('.schedule thead th')].map((th) => th.textContent ?? '');
   const scheduleText = (): string => root.querySelector('.schedule-body')?.textContent ?? '';
   const clickMode = (mode: 'monthly' | 'yearly'): void =>
@@ -554,8 +574,7 @@ describe('Schedule (L3)', () => {
 });
 
 describe('Extra monthly payment (L5)', () => {
-  const tableRows = (): string[][] =>
-    [...root.querySelectorAll('.schedule tbody tr')].map((tr) => [...tr.children].map((td) => td.textContent ?? ''));
+  const tableRows = allScheduleRows;
   const L5_1 = { homePrice: '300000', downPayment: '0', interestRate: '6', termYears: '30' };
 
   it('the field is labelled, has the currency prefix and starts empty when the default is 0', () => {
@@ -692,7 +711,7 @@ describe('Loan product selector (M1)', () => {
     expect(input('interestRate').value).toBe('5.75');
     expect(input('termYears').value).toBe('15');
     expect(result('monthly-payment')).toBe('$2,491.23');
-    expect(root.querySelectorAll('.schedule tbody tr')).toHaveLength(180);
+    expect(allScheduleRows()).toHaveLength(180);
   });
 
   it('M1.3: the description appears under the selector, and goes away for Custom', () => {
@@ -851,5 +870,165 @@ describe('Error paths inside the running app (L8.19)', () => {
     root.querySelector<HTMLButtonElement>('.schedule .csv-button')!.click();
     type('interestRate', '5');
     expect(result('monthly-payment')).toBe('$1,610.46');
+  });
+});
+
+describe('Schedule pages and cards (L3.1, L3.6, L3.11–L3.16)', () => {
+  const L3 = { homePrice: '300000', downPayment: '0' };
+  const jump = (): HTMLSelectElement | null => root.querySelector<HTMLSelectElement>('#schedule-year');
+  const chooseYear = (year: number): void => {
+    jump()!.value = String(year);
+    jump()!.dispatchEvent(new Event('change', { bubbles: true }));
+  };
+  const clickMode = (mode: 'monthly' | 'yearly'): void =>
+    root.querySelector<HTMLButtonElement>(`.schedule [data-mode="${mode}"]`)!.click();
+  const cards = (): HTMLElement[] => [...root.querySelectorAll<HTMLElement>('.schedule .schedule-card')];
+  const cardData = (card: HTMLElement): Record<string, string> =>
+    Object.fromEntries(
+      [...card.querySelectorAll('dt')].map((dt) => [dt.textContent ?? '', dt.nextElementSibling?.textContent ?? '']),
+    );
+
+  it('L3.1: page 1 of 30 shows payments 1–12 of 360', () => {
+    start();
+    enter(L3);
+    expect(pageRows()).toHaveLength(12);
+    expect(pageRows()[0]?.[0]).toBe('1');
+    expect(pageRows()[11]?.[0]).toBe('12');
+    expect(pagerStatus()).toBe('Page 1 of 30 · payments 1–12 of 360');
+  });
+
+  it('L3.11: Previous is unavailable on page 1; Next shows 13–24; Next is unavailable on the last page', () => {
+    start();
+    enter(L3);
+    expect(isUnavailable(pagerButton('prev'))).toBe(true);
+    expect(isUnavailable(pagerButton('next'))).toBe(false);
+    pagerButton('next')!.click();
+    expect(pagerStatus()).toBe('Page 2 of 30 · payments 13–24 of 360');
+    expect(pageRows()[0]?.[0]).toBe('13');
+    expect(pageRows()[11]?.[0]).toBe('24');
+    expect(root.querySelector('.schedule .pager-status')?.getAttribute('aria-live')).toBe('polite');
+    expect(root.querySelector('.schedule .schedule-pager')?.getAttribute('aria-label')).toBe('Schedule pages');
+    chooseYear(30);
+    expect(pagerStatus()).toBe('Page 30 of 30 · payments 349–360 of 360');
+    expect(isUnavailable(pagerButton('next'))).toBe(true);
+    pagerButton('next')!.click(); // unavailable: nothing happens
+    expect(pagerStatus()).toBe('Page 30 of 30 · payments 349–360 of 360');
+  });
+
+  it('L3.2: the last row on page 30 is payment 360, November 2056, balance 0.00', () => {
+    start();
+    enter(L3);
+    chooseYear(30);
+    expect(pageRows()[11]).toEqual(['360', 'November 2056', '$1,800.09', '$1,791.13', '$8.96', '$0.00', '$0.00']);
+  });
+
+  it('L3.12: "Jump to year" lists every loan year with its months; Year 20 shows payments 229–240', () => {
+    start();
+    enter(L3);
+    const options = [...jump()!.options].map((o) => o.textContent);
+    expect(options).toHaveLength(30);
+    expect(options[0]).toBe('Year 1 (Dec 2026 – Nov 2027)');
+    expect(options[19]).toBe('Year 20 (Dec 2045 – Nov 2046)');
+    expect(root.querySelector('label[for="schedule-year"]')?.textContent).toBe('Jump to year');
+    chooseYear(20);
+    expect(pageRows()[0]?.[0]).toBe('229');
+    expect(pageRows()[11]?.[0]).toBe('240');
+    expect(jump()!.value).toBe('20');
+  });
+
+  it('L3.13: page 20 stays when inputs change; a shorter schedule goes to its last page', () => {
+    start();
+    enter(L3);
+    chooseYear(20);
+    type('interestRate', '5');
+    expect(pagerStatus()).toBe('Page 20 of 30 · payments 229–240 of 360');
+    type('termYears', '15');
+    expect(pagerStatus()).toBe('Page 15 of 15 · payments 169–180 of 180');
+  });
+
+  it('L3.14: switching view goes to page 1, both ways; Jump to year is only in the monthly view', () => {
+    start();
+    enter(L3);
+    chooseYear(5);
+    clickMode('yearly');
+    expect(pagerStatus()).toBe('Page 1 of 3 · years 1–10 of 30');
+    expect(pageRows()).toHaveLength(10);
+    expect(jump()?.closest('[hidden]')).not.toBeNull();
+    clickMode('monthly');
+    expect(pagerStatus()).toBe('Page 1 of 30 · payments 1–12 of 360');
+    expect(jump()?.closest('[hidden]')).toBeNull();
+  });
+
+  it('L3.3: yearly view pages hold 10 years; page 3 holds years 21–30', () => {
+    start();
+    enter(L3);
+    clickMode('yearly');
+    pagerButton('next')!.click();
+    pagerButton('next')!.click();
+    expect(pagerStatus()).toBe('Page 3 of 3 · years 21–30 of 30');
+    expect(pageRows()[0]?.[0]).toBe('21');
+    expect(pageRows()[9]?.[0]).toBe('30');
+  });
+
+  it('L3.6: a 12-payment loan fits on one page, with no page controls', () => {
+    start();
+    enter({ homePrice: '1', downPayment: '0', interestRate: '0.001', termYears: '1' });
+    expect(pageRows()).toHaveLength(12);
+    expect(root.querySelector<HTMLElement>('.schedule .schedule-pager')?.hidden).toBe(true);
+  });
+
+  it('L3.15: the current page is also shown as cards with labelled values (shown below 600 px by CSS)', () => {
+    start();
+    enter(L3);
+    expect(cards()).toHaveLength(12);
+    expect(cards()[0]?.querySelector('h3')?.textContent).toBe('Payment 1 · December 2026');
+    expect(cardData(cards()[0]!)).toEqual({
+      Payment: '$1,798.65',
+      Principal: '$298.65',
+      Interest: '$1,500.00',
+      'Extra payment': '$0.00',
+      Balance: '$299,701.35',
+    });
+    pagerButton('next')!.click();
+    expect(cards()[0]?.querySelector('h3')?.textContent).toBe('Payment 13 · December 2027');
+    clickMode('yearly');
+    expect(cards()).toHaveLength(10);
+    expect(cards()[0]?.querySelector('h3')?.textContent).toBe('Year 1');
+    expect(cardData(cards()[0]!)).toEqual({
+      Payment: '$21,583.80',
+      Principal: '$3,684.00',
+      Interest: '$17,899.80',
+      'Extra payment': '$0.00',
+      'Ending balance': '$296,316.00',
+    });
+  });
+
+  it('L3.15: cards and table show the same rows for every page', () => {
+    start();
+    enter(L3);
+    for (let page = 0; page < 3; page++) {
+      const fromTable = pageRows().map((row) => row[2]);
+      const fromCards = cards().map((card) => cardData(card)['Payment']);
+      expect(fromCards).toEqual(fromTable);
+      pagerButton('next')!.click();
+    }
+  });
+
+  it('L3.16: focus stays on Next while paging, also once it becomes unavailable', () => {
+    start();
+    enter({ homePrice: '300000', downPayment: '0', termYears: '2' });
+    const next = pagerButton('next')!;
+    next.focus();
+    next.click();
+    expect(document.activeElement).toBe(next);
+    expect(isUnavailable(next)).toBe(true);
+    expect(next.disabled).toBe(false); // aria-disabled, so focus is not thrown away
+  });
+
+  it('L3.8: an invalid input removes the page controls and the cards too', () => {
+    start();
+    type('homePrice', 'abc');
+    expect(cards()).toHaveLength(0);
+    expect(root.querySelector<HTMLElement>('.schedule .schedule-pager')?.hidden).toBe(true);
   });
 });

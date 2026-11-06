@@ -71,4 +71,13 @@ export const UI_TEXT = {
   colBalance: 'Balance',
   colYear: 'Year',
   colEndBalance: 'Ending balance',
+  schedulePages: 'Schedule pages',
+  previousPage: 'Previous',
+  nextPage: 'Next',
+  jumpToYear: 'Jump to year',
+  pageStatus: (page: number, pages: number, unit: 'payments' | 'years', from: number, to: number, total: number) =>
+    `Page ${page} of ${pages} · ${unit} ${from}–${to} of ${total}`,
+  yearOption: (year: number, from: string, to: string) => `Year ${year} (${from} – ${to})`,
+  paymentCardTitle: (number: number, date: string) => `Payment ${number} · ${date}`,
+  yearCardTitle: (year: number) => `Year ${year}`,
 } as const;

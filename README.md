@@ -1,6 +1,6 @@
 # Mortgage Calculator
 
-A mortgage calculator that runs entirely in the browser. It shows the monthly payment, the total interest and total paid, the payoff date, the effect of an extra monthly payment, and the full repayment schedule (monthly or yearly, downloadable as CSV). An office's loan products can be picked from a list, which fills in and locks the rate and term. Invalid input always gets a clear message, and the page never goes blank, even on an unexpected error.
+A mortgage calculator that runs entirely in the browser. It shows the monthly payment, the total interest and total paid, the payoff date, the effect of an extra monthly payment, and the full repayment schedule (monthly or yearly, one page at a time, as a table or as cards on phones, and downloadable as CSV). An office's loan products can be picked from a list, which fills in and locks the rate and term. Invalid input always gets a clear message, and the page never goes blank, even on an unexpected error.
 
 ## Who it is for
 
@@ -33,14 +33,14 @@ src/engine/      calculation, input parsing and validation (pure functions, no D
 src/config/      loads and checks public/config.json
 src/ui/          the page: form, results, schedule, CSV, loan products, startup
 public/          config.json, edited by the Admin
-tests/unit/      334 unit tests (Vitest; UI tests run in happy-dom)
+tests/unit/      346 unit tests (Vitest; UI tests run in happy-dom)
 docs/            product plan, app roles, jobs to be done, user stories
 transcripts/     the AI sessions; scripts/ has the tool that makes them readable
 ```
 
 ## Try each role
 
-**Loanee.** Open the app. The defaults (350,000 / 50,000 / 6% / 30 years) show **$1,798.65** a month. Change any field and the results update immediately. Type `abc` as the home price and leave the field to see the error handling. Enter `200` as the extra monthly payment to see the months and interest saved. Switch the schedule to **Yearly**, or click **Download CSV**.
+**Loanee.** Open the app. The defaults (350,000 / 50,000 / 6% / 30 years) show **$1,798.65** a month. Change any field and the results update immediately. Type `abc` as the home price and leave the field to see the error handling. Enter `200` as the extra monthly payment to see the months and interest saved. The schedule shows one loan year (12 payments) per page: use **Next**, **Previous** or **Jump to year**, switch to **Yearly**, or click **Download CSV** for every payment. On a phone (narrower than 600 px) each payment is a card instead of a table row.
 
 **Manager.** Choose **Loan product → 15-year fixed**. The rate (5.75) and term (15) are filled in and locked, the note "Set by 15-year fixed. Choose Custom to change." appears under them, and the product's description appears under the selector. Price, down payment and extra payment stay editable. Choose **Custom** to edit the rate and term again.
 
@@ -99,7 +99,7 @@ This submission stays fully local: no server, no accounts. The next steps are sp
 
 **Browser check (L10):** done by hand on 6 November 2026 in the current Chrome, Edge, Firefox and Safari, as reported by the developer: all 13 checks passed, at desktop width and at 360 px, including the keyboard-only check and the Network panel check. The browser versions were not recorded. After the manual check, a layout bug was found below about 350 px (the form fields stuck out of the card on 320 px phones). It is fixed, and the layout was checked in Chromium at 280, 320, 360, 375, 390 and 414 px, at 768 px and on desktop.
 
-**Tests:** `npm test` runs 334 unit tests: engine, parsing, validation, config, CSV, the UI with happy-dom, and startup and error handling.
+**Tests:** `npm test` runs 346 unit tests: engine, parsing, validation, config, CSV, the UI with happy-dom, and startup and error handling.
 
 **Documents:** [Product plan](docs/product-plan.md) · [App roles](docs/app-roles.md) · [Jobs to be done](docs/jobs-to-be-done.md) · [User stories](docs/user-stories.md) · AI session transcripts in [transcripts/](transcripts/)
 

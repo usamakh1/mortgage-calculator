@@ -646,6 +646,135 @@ button:disabled {
   border: 0;
 }
 
+/* Schedule cards (phones) and table (600 px and wider), L3.15.
+   Both hold the same page; display: none also hides the unused one from screen readers. */
+.schedule-cards {
+  display: none;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+@media (max-width: 599px) {
+  .schedule .table-frame {
+    display: none;
+  }
+
+  .schedule-cards {
+    display: grid;
+    gap: var(--space-3);
+  }
+}
+
+.schedule-card {
+  padding: var(--space-3) var(--space-4);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  background: var(--surface-sunken);
+}
+
+.schedule-card h3 {
+  margin: 0 0 var(--space-2);
+  font-size: var(--text-base);
+  font-weight: 650;
+}
+
+.schedule-card dl {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  gap: var(--space-1) var(--space-3);
+  margin: 0;
+  font-size: var(--text-sm);
+}
+
+.schedule-card dt {
+  color: var(--text-muted);
+}
+
+.schedule-card dd {
+  margin: 0;
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+  text-align: right;
+  overflow-wrap: anywhere;
+}
+
+/* Page controls (L3.11–L3.16).
+   Phones: status on top, Previous | Next side by side, then "Jump to year" (label above).
+   600 px and wider: one row. */
+.schedule-pager {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  grid-template-areas:
+    'status status'
+    'prev next'
+    'jump jump';
+  gap: var(--space-3);
+  align-items: center;
+  margin-top: var(--space-4);
+}
+
+.schedule-pager[hidden] {
+  display: none;
+}
+
+.schedule-pager [data-page='prev'] {
+  grid-area: prev;
+}
+
+.schedule-pager [data-page='next'] {
+  grid-area: next;
+}
+
+.pager-status {
+  grid-area: status;
+  margin: 0;
+  color: var(--text-muted);
+  font-size: var(--text-sm);
+  text-align: center;
+  font-variant-numeric: tabular-nums;
+}
+
+.schedule-pager button[aria-disabled='true'] {
+  border-color: var(--border);
+  color: var(--text-muted);
+  background: var(--surface);
+  cursor: not-allowed;
+}
+
+.pager-jump {
+  grid-area: jump;
+  display: grid;
+  gap: var(--space-1);
+}
+
+.pager-jump[hidden] {
+  display: none;
+}
+
+.pager-jump label {
+  font-size: var(--text-sm);
+  font-weight: 600;
+}
+
+@media (min-width: 600px) {
+  .schedule-pager {
+    grid-template-columns: auto auto auto minmax(0, 1fr);
+    grid-template-areas: 'prev status next jump';
+  }
+
+  .pager-status {
+    padding: 0 var(--space-2);
+  }
+
+  .pager-jump {
+    grid-template-columns: auto minmax(0, 24rem);
+    align-items: center;
+    justify-content: end;
+    gap: var(--space-2);
+  }
+}
+
 /* ---------- Select (preset selector, 5c) ---------- */
 select {
   width: 100%;
@@ -718,8 +847,9 @@ select {
 }
 
 .table-scroll {
-  max-height: 480px;
-  overflow: auto; /* scrolls inside its own box at 360px (L10.2) */
+  /* No height limit: a page holds at most 12 rows (pagination, L3.11), so every row is visible.
+     Sideways scrolling stays possible for narrow tablets. */
+  overflow-x: auto;
   border: 1px solid var(--border);
   border-radius: var(--radius-md);
 }

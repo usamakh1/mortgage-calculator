@@ -13,6 +13,8 @@ export interface Formatters {
   money(cents: number): string;
   /** { year: 2056, month: 11 } → e.g. "November 2056". */
   month(value: YearMonth): string;
+  /** { year: 2056, month: 11 } → e.g. "Nov 2056" (for tight spaces such as the year list). */
+  shortMonth(value: YearMonth): string;
   /** 0.46 → "46%" (or "46 %" in de-DE). */
   percent(fraction: number): string;
   currency: CurrencyAffix;
@@ -30,19 +32,23 @@ export function createFormatters(currency: string, locale: string): Formatters {
   let moneyFormat: Intl.NumberFormat;
   let monthFormat: Intl.DateTimeFormat;
   let percentFormat: Intl.NumberFormat;
+  let shortMonthFormat: Intl.DateTimeFormat;
   try {
     moneyFormat = new Intl.NumberFormat(locale, { style: 'currency', currency });
     monthFormat = new Intl.DateTimeFormat(locale, { month: 'long', year: 'numeric' });
     percentFormat = new Intl.NumberFormat(locale, { style: 'percent', maximumFractionDigits: 0 });
+    shortMonthFormat = new Intl.DateTimeFormat(locale, { month: 'short', year: 'numeric' });
   } catch {
     // Config validation already rejects bad values; this keeps the UI alive regardless.
     moneyFormat = new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' });
     monthFormat = new Intl.DateTimeFormat('en-US', { month: 'long', year: 'numeric' });
     percentFormat = new Intl.NumberFormat('en-US', { style: 'percent', maximumFractionDigits: 0 });
+    shortMonthFormat = new Intl.DateTimeFormat('en-US', { month: 'short', year: 'numeric' });
   }
   return {
     money: (cents) => moneyFormat.format(cents / 100),
     month: ({ year, month }) => monthFormat.format(new Date(year, month - 1, 1)),
+    shortMonth: ({ year, month }) => shortMonthFormat.format(new Date(year, month - 1, 1)),
     percent: (fraction) => percentFormat.format(fraction),
     currency: affixOf(moneyFormat),
   };
