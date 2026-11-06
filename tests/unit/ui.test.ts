@@ -409,3 +409,146 @@ describe('5d design: header, adornments, principal vs. interest bar', () => {
     expect(root.querySelector('.breakdown')).toBeNull();
   });
 });
+
+describe('Schedule (L3)', () => {
+  const tableRows = (): string[][] =>
+    [...root.querySelectorAll('.schedule tbody tr')].map((tr) => [...tr.children].map((td) => td.textContent ?? ''));
+  const headers = (): string[] => [...root.querySelectorAll('.schedule thead th')].map((th) => th.textContent ?? '');
+  const scheduleText = (): string => root.querySelector('.schedule-body')?.textContent ?? '';
+  const clickMode = (mode: 'monthly' | 'yearly'): void =>
+    root.querySelector<HTMLButtonElement>(`.schedule [data-mode="${mode}"]`)!.click();
+
+  it('L3.1: monthly by default, 360 rows, the seven columns, and row 1', () => {
+    start();
+    enter({ homePrice: '300000', downPayment: '0' });
+    expect(root.querySelector('.schedule [data-mode="monthly"]')?.getAttribute('aria-pressed')).toBe('true');
+    expect(headers()).toEqual(['Payment number', 'Date', 'Payment', 'Principal', 'Interest', 'Extra payment', 'Balance']);
+    expect(tableRows()).toHaveLength(360);
+    expect(tableRows()[0]).toEqual(['1', 'December 2026', '$1,798.65', '$298.65', '$1,500.00', '$0.00', '$299,701.35']);
+  });
+
+  it('L3.2: the last row is 360, November 2056, 1,800.09, 1,791.13, 8.96, 0.00, 0.00', () => {
+    start();
+    enter({ homePrice: '300000', downPayment: '0' });
+    expect(tableRows()[359]).toEqual(['360', 'November 2056', '$1,800.09', '$1,791.13', '$8.96', '$0.00', '$0.00']);
+  });
+
+  it('L3.3: yearly view has 30 rows; year 1 is 21,583.80 / 3,684.00 / 17,899.80 / 296,316.00', () => {
+    start();
+    enter({ homePrice: '300000', downPayment: '0' });
+    clickMode('yearly');
+    expect(root.querySelector('.schedule [data-mode="yearly"]')?.getAttribute('aria-pressed')).toBe('true');
+    expect(root.querySelector('.schedule [data-mode="monthly"]')?.getAttribute('aria-pressed')).toBe('false');
+    expect(headers()).toEqual(['Year', 'Payment', 'Principal', 'Interest', 'Extra payment', 'Ending balance']);
+    expect(tableRows()).toHaveLength(30);
+    expect(tableRows()[0]).toEqual(['1', '$21,583.80', '$3,684.00', '$17,899.80', '$0.00', '$296,316.00']);
+    clickMode('monthly');
+    expect(tableRows()).toHaveLength(360);
+  });
+
+  it('the chosen view stays when an input changes', () => {
+    start();
+    clickMode('yearly');
+    type('termYears', '15');
+    expect(tableRows()).toHaveLength(15);
+  });
+
+  it('L3.4 / L3.5: Download CSV saves mortgage-schedule.csv with monthly rows, even in yearly view', () => {
+    const download = vi.fn();
+    start({}, { download });
+    enter({ homePrice: '300000', downPayment: '0' });
+    clickMode('yearly');
+    root.querySelector<HTMLButtonElement>('.schedule .csv-button')!.click();
+    expect(download).toHaveBeenCalledTimes(1);
+    const [filename, text] = download.mock.calls[0] as [string, string];
+    expect(filename).toBe('mortgage-schedule.csv');
+    const lines = text.split('\r\n').filter(Boolean);
+    expect(lines[0]).toBe('Payment number,Date,Payment,Principal,Interest,Extra payment,Balance');
+    expect(lines).toHaveLength(361);
+    expect(lines[1]).toBe('1,2026-12,1798.65,298.65,1500.00,0.00,299701.35');
+  });
+
+  it('L3.6: 1 / 0 / 0.001 / 1 → 12 rows; rows 1–11 pay 0.08, row 12 pays 0.12, last balance 0.00', () => {
+    start();
+    enter({ homePrice: '1', downPayment: '0', interestRate: '0.001', termYears: '1' });
+    const rows = tableRows();
+    expect(rows).toHaveLength(12);
+    rows.slice(0, 11).forEach((row) => expect(row[2]).toBe('$0.08'));
+    expect(rows[11]?.[2]).toBe('$0.12');
+    expect(rows[11]?.[6]).toBe('$0.00');
+  });
+
+  it('L3.7: maximum values → exactly 480 rows, last balance 0.00, no negative, NaN or Infinity cell', () => {
+    start();
+    enter({ homePrice: '100000000', downPayment: '0', interestRate: '30', termYears: '40' });
+    const rows = tableRows();
+    expect(rows).toHaveLength(480);
+    expect(rows[479]?.[6]).toBe('$0.00');
+    expect(scheduleText()).not.toMatch(/NaN|Infinity|-\$|\$-/);
+  });
+
+  it('L3.8: an invalid input replaces the schedule with E8 (no rows, no buttons); fixing it brings the new schedule', () => {
+    start();
+    expect(tableRows()).toHaveLength(360);
+    type('homePrice', 'abc');
+    expect(scheduleText()).toBe(E8);
+    expect(root.querySelector('.schedule tbody')).toBeNull();
+    expect(root.querySelector<HTMLElement>('.schedule-toolbar')?.hidden).toBe(true);
+    type('homePrice', '350000');
+    type('termYears', '15');
+    expect(tableRows()).toHaveLength(180);
+    expect(root.querySelector<HTMLElement>('.schedule-toolbar')?.hidden).toBe(false);
+  });
+
+  it('E7 and E9 also replace the schedule', () => {
+    start();
+    enter({ homePrice: '1', downPayment: '0', interestRate: '30', termYears: '40' });
+    expect(scheduleText()).toBe('The loan amount is too small for this term.');
+    start({}, {
+      calculate: () => {
+        throw new Error('boom');
+      },
+    });
+    expect(scheduleText()).toBe('Something went wrong. Your inputs are kept; please try again.');
+  });
+
+  it('L3.9: on 15 March 2027, row 1 is April 2027 and row 360 is March 2057', () => {
+    start({}, { today: () => new Date(2027, 2, 15) });
+    enter({ homePrice: '300000', downPayment: '0' });
+    expect(tableRows()[0]?.[1]).toBe('April 2027');
+    expect(tableRows()[359]?.[1]).toBe('March 2057');
+  });
+
+  it('L3.10: the CSV dates match the on-screen schedule on any day (15 March 2027)', () => {
+    const download = vi.fn();
+    start({}, { today: () => new Date(2027, 2, 15), download });
+    enter({ homePrice: '300000', downPayment: '0' });
+    root.querySelector<HTMLButtonElement>('.schedule .csv-button')!.click();
+    const lines = (download.mock.calls[0]?.[1] as string).split('\r\n').filter(Boolean);
+    expect(lines[1]?.split(',')[1]).toBe('2027-04');
+    expect(lines[360]?.split(',')[1]).toBe('2057-03');
+  });
+
+  it('reused rows never keep stale values: 30 → 1 → 30 years, then a new rate', () => {
+    start();
+    enter({ homePrice: '300000', downPayment: '0' });
+    type('termYears', '1');
+    expect(tableRows()).toHaveLength(12);
+    type('termYears', '30');
+    expect(tableRows()).toHaveLength(360);
+    expect(tableRows()[359]).toEqual(['360', 'November 2056', '$1,800.09', '$1,791.13', '$8.96', '$0.00', '$0.00']);
+    type('interestRate', '5');
+    expect(tableRows()[0]).toEqual(['1', 'December 2026', '$1,610.46', '$360.46', '$1,250.00', '$0.00', '$299,639.54']);
+    expect(root.querySelectorAll('.schedule tbody')).toHaveLength(1);
+  });
+
+  it('the table is a labelled, keyboard-focusable scroll region with a caption and column headers', () => {
+    start();
+    const region = root.querySelector('.schedule .table-scroll')!;
+    expect(region.getAttribute('role')).toBe('region');
+    expect(region.getAttribute('aria-label')).toBe('Amortization schedule table');
+    expect(region.getAttribute('tabindex')).toBe('0');
+    expect(root.querySelector('.schedule caption')?.textContent).toBeTruthy();
+    for (const th of root.querySelectorAll('.schedule thead th')) expect(th.getAttribute('scope')).toBe('col');
+  });
+});

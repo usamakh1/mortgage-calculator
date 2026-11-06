@@ -12,10 +12,14 @@ import { createForm, FORM_FIELDS, type Adornment } from './form';
 import { createFormatters, toInputText } from './format';
 import { createBanner, createFooter, createHeader } from './layout';
 import { createResults } from './results';
+import { createSchedule } from './schedule';
+import { downloadText } from './csv';
 
 export interface AppDependencies {
   calculate?: (input: LoanInput) => CalcOutcome;
   today?: () => Date;
+  /** Saves a file; replaced in tests. */
+  download?: (filename: string, text: string) => void;
 }
 
 export interface AppHandle {
@@ -27,6 +31,7 @@ export function createApp(root: HTMLElement, configResult: ConfigResult, deps: A
   const { config, notice } = configResult;
   const calculate = deps.calculate ?? calculateLoan;
   const today = deps.today ?? (() => new Date());
+  const download = deps.download ?? downloadText;
   const format = createFormatters(config.currency, config.locale);
 
   const header = createHeader(config.officeName);
@@ -63,7 +68,8 @@ export function createApp(root: HTMLElement, configResult: ConfigResult, deps: A
 
   const main = document.createElement('main');
   main.className = 'layout';
-  main.append(formSection, results.element);
+  const schedule = createSchedule(format, download);
+  main.append(formSection, results.element, schedule.element);
 
   const banner = createBanner(notice);
   root.replaceChildren(header, ...(banner ? [banner] : []), main, createFooter(config.officeName, config.disclaimer));
@@ -71,9 +77,15 @@ export function createApp(root: HTMLElement, configResult: ConfigResult, deps: A
   /** Fields whose message may show: left at least once since they were last valid. */
   const touched = new Set<Field>();
 
+  /** Replaces every result and the whole schedule with one message (L8.15, L3.8). */
+  const showMessage = (text: string): void => {
+    results.showMessage(text);
+    schedule.showMessage(text);
+  };
+
   const showUnexpectedError = (error: unknown): void => {
     console.error('Unexpected error', error);
-    results.showMessage(MESSAGES.E9);
+    showMessage(MESSAGES.E9);
   };
 
   const update = (): void => {
@@ -89,20 +101,22 @@ export function createApp(root: HTMLElement, configResult: ConfigResult, deps: A
         }
       }
       if (!outcome.ok) {
-        results.showMessage(MESSAGES.E8);
+        showMessage(MESSAGES.E8);
         return;
       }
 
       const calc = calculate({ ...outcome.values, today: today() });
       if (!calc.ok) {
         if (calc.error === 'E10') console.error('Calculation returned E10', outcome.values);
-        results.showMessage(calc.error === 'E7' ? MESSAGES.E7 : MESSAGES.E10);
+        showMessage(calc.error === 'E7' ? MESSAGES.E7 : MESSAGES.E10);
         return;
       }
       if (!results.showResult(calc.result, outcome.values.principalCents)) {
         console.error('Calculation produced a value that is not a safe amount', calc.result);
-        results.showMessage(MESSAGES.E10);
+        showMessage(MESSAGES.E10);
+        return;
       }
+      schedule.show(calc.result.rows);
     } catch (error) {
       showUnexpectedError(error);
     }
