@@ -251,7 +251,15 @@ h1 {
 /* ---------- Form ---------- */
 .loan-form {
   display: grid;
+  /* minmax(0, 1fr): the column never grows wider than the card. Without it, the column grows to
+     the widest field's natural width (a <select> is as wide as its longest option), and every
+     field overflowed the card on 320 px phones. */
+  grid-template-columns: minmax(0, 1fr);
   gap: var(--space-4);
+}
+
+.loan-form > .field {
+  min-width: 0;
 }
 
 .field label {
@@ -641,6 +649,9 @@ button:disabled {
 /* ---------- Select (preset selector, 5c) ---------- */
 select {
   width: 100%;
+  max-width: 100%;
+  min-width: 0;
+  text-overflow: ellipsis; /* a long product name is cut with "…" instead of widening the page */
   min-height: var(--control-height);
   padding: 0 var(--space-10) 0 var(--space-3);
   border: 1px solid var(--border-input);

@@ -254,7 +254,7 @@ As a Loanee, I want the calculator to work on my phone and in whichever current 
 
 **Acceptance criteria**
 1. Given the current versions of Chrome, Edge, Firefox and Safari on desktop, when a reviewer follows the README browser checklist (enter 350,000 / 50,000 / 6 / 30 and see 1,798.65; enter rate 31 and see E4; fix it and see 1,798.65 again; switch to yearly view; download the CSV), then every step gives the documented result in each browser. The README records the browser versions and the date of the check.
-2. Given a window 360 px wide, when I load the page and open the schedule, then the page has no horizontal scroll (`document.documentElement.scrollWidth` ≤ 360), every input and result is visible without zooming, and the schedule table scrolls horizontally inside its own container.
+2. Given a window 320 px wide (the narrowest common phones, such as the iPhone SE) or 360 px wide, when I load the page and open the schedule, then the page has no horizontal scroll (`document.documentElement.scrollWidth` ≤ the window width), every input and result is visible without zooming, and the schedule table scrolls horizontally inside its own container.
 3. Given I use only the keyboard, when I press Tab from the top of the page, then every input, the preset selector, the monthly/yearly switch and the Download CSV button are reached in visual order, each shows a visible focus outline, and each can be operated with Enter, Space or the arrow keys.
 
 ### L11. Remember my last scenario

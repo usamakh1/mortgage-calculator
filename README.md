@@ -97,7 +97,7 @@ This submission stays fully local: no server, no accounts. The next steps are sp
 
 **Network check (A5.4):** done by hand on 6 November 2026 in current Chrome, Edge, Firefox and Safari with the browser's Network panel open: only requests to `localhost` (the page, its JS and CSS, and `config.json`), nothing external. The same check run through Playwright in Chromium recorded exactly those 4 requests.
 
-**Browser check (L10):** done by hand on 6 November 2026 in the current Chrome, Edge, Firefox and Safari, as reported by the developer: all 13 checks passed, at desktop width and at 360 px, including the keyboard-only check and the Network panel check. The browser versions were not recorded.
+**Browser check (L10):** done by hand on 6 November 2026 in the current Chrome, Edge, Firefox and Safari, as reported by the developer: all 13 checks passed, at desktop width and at 360 px, including the keyboard-only check and the Network panel check. The browser versions were not recorded. After the manual check, a layout bug was found below about 350 px (the form fields stuck out of the card on 320 px phones). It is fixed, and the layout was checked in Chromium at 280, 320, 360, 375, 390 and 414 px, at 768 px and on desktop.
 
 **Tests:** `npm test` runs 334 unit tests: engine, parsing, validation, config, CSV, the UI with happy-dom, and startup and error handling.
 
