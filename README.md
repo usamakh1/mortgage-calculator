@@ -1,6 +1,6 @@
 # Mortgage Calculator
 
-A mortgage calculator that runs entirely in the browser. It shows the monthly payment, the total interest and total paid, the payoff date, the effect of an extra monthly payment, and the full repayment schedule (monthly or yearly, downloadable as CSV).
+A mortgage calculator that runs entirely in the browser. It shows the monthly payment, the total interest and total paid, the payoff date, the effect of an extra monthly payment, and the full repayment schedule (monthly or yearly, downloadable as CSV). An office's loan products can be picked from a list, which fills in and locks the rate and term. Invalid input always gets a clear message, and the page never goes blank, even on an unexpected error.
 
 ## Who it is for
 
@@ -24,6 +24,18 @@ npm run dev        # prints http://localhost:5173 — open it
 npm test           # unit tests (Vitest)
 npm run build      # type-checks and writes static files to dist/
 npm run preview    # serves dist/ at http://localhost:4173
+```
+
+## Project structure
+
+```
+src/engine/      calculation, input parsing and validation (pure functions, no DOM)
+src/config/      loads and checks public/config.json
+src/ui/          the page: form, results, schedule, CSV, loan products, startup
+public/          config.json, edited by the Admin
+tests/unit/      334 unit tests (Vitest; UI tests run in happy-dom)
+docs/            product plan, app roles, jobs to be done, user stories
+transcripts/     the AI sessions; scripts/ has the tool that makes them readable
 ```
 
 ## Try each role
@@ -74,11 +86,20 @@ What the app does today is tracked story by story in [docs/user-stories.md](docs
 | Not implemented (Stretch / not in this build) | L4, L6, L7, L9, L11, L12, M2, M3, M4, A6, A7: comparison, affordability, sharing and printing, housing costs and the others |
 | Not implemented (Future) | L13, M5, M6, A8, A9, A10, A11: live market rates, saved client quotes, sign-in, server-side role checks, a settings page and a change log ([§10 Future architecture](docs/product-plan.md#10-future-architecture)). L14, L15, L16: an understanding check, plain-language explanations and cost in everyday terms ([§11 Future bets](docs/product-plan.md#11-future-bets)). This submission stays fully local. |
 
+## What's next (designed, not built)
+
+This submission stays fully local: no server, no accounts. The next steps are specified as user stories (all **Not implemented**, Scope: Future), so they are ready to build:
+
+- **A small server the office hosts itself** ([product plan §10](docs/product-plan.md#10-future-architecture)): sign-in for Managers and Admins (M6, A8), role checks on the server (A9), saved client quotes (M5), a settings page instead of editing `config.json` (A10), a change log of every settings change (A11), and today's market rates with their source and time (L13). Self-hosted because the office wants no costs and no client data at third parties.
+- **Three "Future bets"** ([product plan §11](docs/product-plan.md#11-future-bets)), each with a hypothesis, a cheap test and its main risk: a short understanding check after the results (L14), plain-language explanations where every number comes from the tested engine (L15), and the cost in everyday terms, such as "the interest equals about 193 of your monthly payments" (L16). Six more bets are listed there without stories yet.
+
+## Checks
+
 **Network check (A5.4):** Chromium on 6 November 2026, run through Playwright. Loading the app, choosing a product, entering an extra payment, switching to the yearly view and downloading the CSV made exactly 4 requests, all to the app's own origin: the page, its JS and CSS, and `config.json`.
 
 **Browser check (L10):** not yet done by hand. Planned for the current Chrome, Edge, Firefox and Safari, at desktop width and at 360 px with the device toolbar, keyboard only.
 
-**Tests:** `npm test` runs 321 unit tests: engine, parsing, validation, config, CSV, and the UI with happy-dom.
+**Tests:** `npm test` runs 334 unit tests: engine, parsing, validation, config, CSV, the UI with happy-dom, and startup and error handling.
 
 **Documents:** [Product plan](docs/product-plan.md) · [App roles](docs/app-roles.md) · [Jobs to be done](docs/jobs-to-be-done.md) · [User stories](docs/user-stories.md) · AI session transcripts in [transcripts/](transcripts/)
 
@@ -86,7 +107,7 @@ What the app does today is tracked story by story in [docs/user-stories.md](docs
 
 - **AI tool:** Claude Code, model Claude Opus 5.5. The full sessions are in [transcripts/](transcripts/).
 - **Planning:** a separate Claude Code session (session-02, also Claude Opus 5.5) analysed the assignment, reviewed the planning documents and planned the prompts for the build session (session-03).
-- **Code changed by hand:** none.
+- **Code changed by hand:** none. `transcripts/INDEX.md` was first written by hand.
 - **Stack:** TypeScript (strict), Vite, Vitest with happy-dom. No UI framework, no runtime dependencies.
 
 ## Transcripts
