@@ -34,6 +34,7 @@ export const UI_TEXT = {
   extraPayment: 'Extra monthly payment',
   loanProduct: 'Loan product',
   custom: 'Custom',
+  lockedBy: (productName: string) => `Set by ${productName}. Choose Custom to change.`,
   savingsIntro: (amount: string) => `Paying ${amount} extra each month`,
   monthsSaved: 'Months saved',
   interestSaved: 'Interest saved',

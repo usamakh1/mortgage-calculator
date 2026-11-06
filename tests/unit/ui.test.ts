@@ -669,12 +669,20 @@ describe('Loan product selector (M1)', () => {
   };
   const selectedText = (): string => select().selectedOptions[0]?.textContent ?? '';
   const description = (): string => root.querySelector('#field-preset-description')?.textContent ?? '';
+  const lockNote = (): HTMLElement | null => root.querySelector<HTMLElement>('#field-lock-note');
+  const fieldOrder = (): string[] =>
+    [...root.querySelectorAll<HTMLInputElement | HTMLSelectElement>('form input, form select')].map((el) => el.name);
+  const isLocked = (field: Field): boolean => input(field).readOnly;
 
-  it('M1.1: "Loan product" lists Custom, 30-year fixed, 15-year fixed in that order, Custom selected', () => {
+  it('M1.1: Custom, 30-year fixed, 15-year fixed in order, Custom selected; rate and term follow the selector and are editable', () => {
     start(PRESETS);
     expect(root.querySelector('label[for="field-preset"]')?.textContent).toBe('Loan product');
     expect([...select().options].map((o) => o.textContent)).toEqual(['Custom', '30-year fixed', '15-year fixed']);
     expect(selectedText()).toBe('Custom');
+    expect(fieldOrder()).toEqual(['preset', 'interestRate', 'termYears', 'homePrice', 'downPayment', 'extraPayment']);
+    expect(isLocked('interestRate')).toBe(false);
+    expect(isLocked('termYears')).toBe(false);
+    expect(lockNote()?.textContent ?? '').toBe('');
   });
 
   it('M1.2: choosing 15-year fixed fills 5.75 and 15 and updates the payment to 2,491.23', () => {
@@ -697,66 +705,103 @@ describe('Loan product selector (M1)', () => {
     expect(description()).toBe('');
   });
 
-  it('M1.4: editing the rate after choosing a preset switches to Custom and uses the new rate', () => {
+  it('M1.4: with a product selected, rate and term are readonly (not disabled), focusable, and explained by the note', () => {
     start(PRESETS);
-    enter({ homePrice: '350000', downPayment: '50000' });
     choose('f15');
-    type('interestRate', '6');
-    expect(selectedText()).toBe('Custom');
-    expect(result('monthly-payment')).toBe('$2,531.57');
-    expect(description()).toBe('');
+    for (const field of ['interestRate', 'termYears'] as const) {
+      const el = input(field);
+      expect(el.readOnly).toBe(true);
+      expect(el.disabled).toBe(false);
+      expect(el.tabIndex).not.toBe(-1);
+      expect(el.getAttribute('aria-describedby')?.split(' ')).toContain('field-lock-note');
+      expect(el.closest('.field')?.classList.contains('is-locked')).toBe(true);
+    }
+    expect(lockNote()?.textContent).toBe('Set by 15-year fixed. Choose Custom to change.');
+    expect(lockNote()?.hidden).toBe(false);
+    // The note sits directly under the rate and term fields.
+    expect(input('termYears').closest('.field')?.nextElementSibling).toBe(lockNote());
   });
 
-  it('M1.4: editing the term also switches to Custom', () => {
+  it('M1.4: a forced input event on a locked field (e.g. a script) does not unlock it or change the product', () => {
     start(PRESETS);
-    choose('f30');
-    type('termYears', '25');
-    expect(selectedText()).toBe('Custom');
+    choose('f15');
+    input('interestRate').dispatchEvent(new Event('input', { bubbles: true }));
+    expect(selectedText()).toBe('15-year fixed');
+    expect(isLocked('interestRate')).toBe(true);
+    expect(input('interestRate').value).toBe('5.75');
   });
 
   it.each(['homePrice', 'downPayment', 'extraPayment'] as const)(
-    'M1.5: changing %s keeps the preset (not part of a preset)',
+    'M1.5: changing %s keeps the product and the lock',
     (field) => {
       start(PRESETS);
       choose('f15');
       type(field, '10000');
       expect(selectedText()).toBe('15-year fixed');
       expect(description()).toBe('Lower total interest');
+      expect(isLocked('interestRate')).toBe(true);
+      expect(isLocked('termYears')).toBe(true);
+      expect(input(field).readOnly).toBe(false);
     },
   );
 
-  it('M1.6: choosing Custom keeps the current field values', () => {
+  it('M1.6: choosing Custom unlocks rate and term, keeps 5.75 / 15, removes the note; rate 6 → 2,531.57', () => {
     start(PRESETS);
+    enter({ homePrice: '350000', downPayment: '50000' });
     choose('f15');
     choose('');
     expect(selectedText()).toBe('Custom');
+    expect(isLocked('interestRate')).toBe(false);
+    expect(isLocked('termYears')).toBe(false);
     expect(input('interestRate').value).toBe('5.75');
     expect(input('termYears').value).toBe('15');
+    expect(lockNote()?.hidden).toBe(true);
+    expect(input('interestRate').getAttribute('aria-describedby') ?? '').not.toContain('field-lock-note');
+    expect(root.querySelector('.field.is-locked')).toBeNull();
+    type('interestRate', '6');
+    expect(result('monthly-payment')).toBe('$2,531.57');
+    expect(selectedText()).toBe('Custom');
   });
 
-  it.each([[{}], [{ presets: [] }]])('M1.7: no presets (%j) → no selector, calculator works', (json) => {
+  it('M1.7: switching from 30-year fixed to 15-year fixed updates the values and the note, and stays locked', () => {
+    start(PRESETS);
+    choose('f30');
+    expect(input('interestRate').value).toBe('6.5');
+    expect(lockNote()?.textContent).toBe('Set by 30-year fixed. Choose Custom to change.');
+    choose('f15');
+    expect(input('interestRate').value).toBe('5.75');
+    expect(input('termYears').value).toBe('15');
+    expect(isLocked('interestRate')).toBe(true);
+    expect(lockNote()?.textContent).toBe('Set by 15-year fixed. Choose Custom to change.');
+  });
+
+  it.each([[{}], [{ presets: [] }]])('M1.8: no presets (%j) → no selector, usual field order, editable, no note', (json) => {
     start(json);
     expect(root.querySelector('#field-preset')).toBeNull();
-    expect(root.querySelector('label[for="field-preset"]')).toBeNull();
+    expect(fieldOrder()).toEqual(['homePrice', 'downPayment', 'interestRate', 'termYears', 'extraPayment']);
+    expect(isLocked('interestRate')).toBe(false);
+    expect(lockNote()).toBeNull();
     expect(result('monthly-payment')).toBe('$1,798.65');
   });
 
-  it('choosing a preset clears a shown rate error', () => {
+  it('a locked field keeps its error behaviour out of the way: choosing a product clears a shown rate error', () => {
     start(PRESETS);
     type('interestRate', '31');
     leave('interestRate');
     expect(errorText('interestRate')).toContain('Enter an interest rate');
     choose('f30');
     expect(errorText('interestRate')).toBe('');
+    expect(input('interestRate').getAttribute('aria-describedby')).toBe('field-lock-note');
     expect(result('monthly-payment')).not.toBeNull();
   });
 
-  it('preset names and descriptions are plain text', () => {
+  it('preset names and descriptions are plain text, including in the note', () => {
     start({ presets: [{ id: 'x', name: '<b>Bold</b>', ratePercent: 5, termYears: 15, description: '<i>it</i>' }] });
     expect([...select().options].map((o) => o.textContent)).toContain('<b>Bold</b>');
     choose('x');
     expect(description()).toBe('<i>it</i>');
-    expect(root.querySelector('#field-preset-description i, select b')).toBeNull();
+    expect(lockNote()?.textContent).toBe('Set by <b>Bold</b>. Choose Custom to change.');
+    expect(root.querySelector('#field-preset-description i, select b, #field-lock-note b')).toBeNull();
   });
 });
 

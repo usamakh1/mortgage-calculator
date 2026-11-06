@@ -26,6 +26,14 @@ export interface FormView {
   read(): RawInputs;
   /** Shows (text) or clears (null) the message under a field. */
   setError(field: Field, text: string | null): void;
+  /**
+   * Locks or unlocks a field (M1.4). Locked fields are `readonly`, not `disabled`: they stay in
+   * the Tab order, screen readers announce their value, and their text keeps full contrast.
+   * `noteId` is added to `aria-describedby` while locked.
+   */
+  setLocked(field: Field, locked: boolean, noteId: string): void;
+  /** The wrapper element of a field, e.g. to insert a note after it. */
+  wrapperOf(field: Field): HTMLElement | undefined;
 }
 
 /** Visual text before or after an input, e.g. "$" or "years". Hidden from screen readers: the label says it. */
@@ -50,6 +58,17 @@ export function createForm(
   const inputs: Partial<Record<Field, HTMLInputElement>> = {};
   const errors: Partial<Record<Field, HTMLElement>> = {};
   const wrappers: Partial<Record<Field, HTMLElement>> = {};
+  /** What `aria-describedby` points to: the error message and/or a lock note. */
+  const described: Partial<Record<Field, { error: boolean; lockNote: string | null }>> = {};
+
+  const refreshDescribedBy = (field: Field): void => {
+    const input = inputs[field];
+    const state = described[field];
+    if (!input || !state) return;
+    const ids = [state.error ? errorId(field) : null, state.lockNote].filter((id): id is string => id !== null);
+    if (ids.length > 0) input.setAttribute('aria-describedby', ids.join(' '));
+    else input.removeAttribute('aria-describedby');
+  };
 
   for (const spec of specs) {
     const wrapper = document.createElement('div');
@@ -94,6 +113,7 @@ export function createForm(
     inputs[spec.field] = input;
     errors[spec.field] = error;
     wrappers[spec.field] = wrapper;
+    described[spec.field] = { error: false, lockNote: null };
   }
 
   return {
@@ -111,15 +131,18 @@ export function createForm(
       const error = errors[field];
       const wrapper = wrappers[field];
       if (!input || !error || !wrapper) return;
+      const state = described[field];
       if (text === null) {
         input.removeAttribute('aria-invalid');
-        input.removeAttribute('aria-describedby');
+        if (state) state.error = false;
+        refreshDescribedBy(field);
         wrapper.classList.remove('has-error');
         error.replaceChildren();
         return;
       }
       input.setAttribute('aria-invalid', 'true');
-      input.setAttribute('aria-describedby', errorId(field));
+      if (state) state.error = true;
+      refreshDescribedBy(field);
       wrapper.classList.add('has-error');
       const marker = document.createElement('span');
       marker.className = 'error-marker';
@@ -127,5 +150,16 @@ export function createForm(
       marker.textContent = UI_TEXT.errorMarker;
       error.replaceChildren(marker, document.createTextNode(text));
     },
+    setLocked(field, locked, noteId) {
+      const input = inputs[field];
+      const wrapper = wrappers[field];
+      const state = described[field];
+      if (!input || !wrapper || !state) return;
+      input.readOnly = locked;
+      wrapper.classList.toggle('is-locked', locked);
+      state.lockNote = locked ? noteId : null;
+      refreshDescribedBy(field);
+    },
+    wrapperOf: (field) => wrappers[field],
   };
 }

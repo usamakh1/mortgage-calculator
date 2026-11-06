@@ -30,7 +30,7 @@ npm run preview    # serves dist/ at http://localhost:4173
 
 **Loanee.** Open the app. The defaults (350,000 / 50,000 / 6% / 30 years) show **$1,798.65** a month. Change any field and the results update immediately. Type `abc` as the home price and leave the field to see the error handling. Enter `200` as the extra monthly payment to see the months and interest saved. Switch the schedule to **Yearly**, or click **Download CSV**.
 
-**Manager.** Choose **Loan product → 15-year fixed**. The rate (5.75) and term (15) are filled in, and the product's description appears. Edit the rate and the selector switches back to **Custom**, so the figures are never labelled with a product they no longer match.
+**Manager.** Choose **Loan product → 15-year fixed**. The rate (5.75) and term (15) are filled in and locked, the note "Set by 15-year fixed. Choose Custom to change." appears under them, and the product's description appears under the selector. Price, down payment and extra payment stay editable. Choose **Custom** to edit the rate and term again.
 
 **Admin.** Edit `public/config.json`, save, and reload the page (the dev server doesn't need a restart):
 1. Set `"officeName": "Your Office"`. It appears in the header and the footer.

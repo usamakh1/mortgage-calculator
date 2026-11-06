@@ -274,14 +274,17 @@ As a Loanee, I want to enter my down payment as a percentage of the home price, 
 
 As a Manager, I want to pick one of our loan products from a list, so that the rate and term are filled in correctly and consistently.
 
+While a product is selected, its rate and term are locked, so a quote can never show a product name with figures that don't belong to it. Locked fields use `readonly`, not `disabled`: they stay in the Tab order, screen readers announce their value and the note, and their text keeps full contrast.
+
 **Acceptance criteria**
-1. Given config presets "30-year fixed" (6.5%, 30 years) and "15-year fixed" (5.75%, 15 years), when the page loads, then a "Loan product" selector lists "Custom", "30-year fixed" and "15-year fixed" in that order, with "Custom" selected.
+1. Given config presets "30-year fixed" (6.5%, 30 years) and "15-year fixed" (5.75%, 15 years), when the page loads, then a "Loan product" selector lists "Custom", "30-year fixed" and "15-year fixed" in that order, with "Custom" selected, and the interest rate and loan term fields come directly after the selector and are editable.
 2. Given home price 350,000 and down payment 50,000, when I select "15-year fixed", then the rate field shows 5.75, the term shows 15, and the monthly payment updates to 2,491.23.
 3. Given a preset with a `description`, when I select it, then the description text appears under the selector.
-4. Given "15-year fixed" is selected, when I change the rate to 6, then the selector shows "Custom" and the results use 6%.
-5. Given "15-year fixed" is selected, when I change the home price, then the selector still shows "15-year fixed", because price is not part of a preset.
-6. Given "15-year fixed" is selected, when I choose "Custom", then the fields keep their current values.
-7. Given the config has no presets (missing or an empty list), when the page loads, then the selector is hidden and the calculator works normally.
+4. Given "15-year fixed" is selected, when I try to type in or paste into the rate or term field, then the values stay 5.75 and 15. Both fields are `readonly` (not `disabled`), can still be reached with Tab, and under them I see "Set by 15-year fixed. Choose Custom to change.", which is linked to both fields with `aria-describedby`.
+5. Given "15-year fixed" is selected, when I change the home price, down payment or extra payment, then the selector still shows "15-year fixed" and the rate and term stay locked.
+6. Given "15-year fixed" is selected, when I choose "Custom", then the rate and term become editable, keep the values 5.75 and 15, and the "Set by …" note disappears. When I then change the rate to 6 (with 350,000 / 50,000), the monthly payment updates to 2,531.57 and the selector still shows "Custom".
+7. Given "30-year fixed" is selected, when I select "15-year fixed", then the rate and term change to 5.75 and 15, stay locked, and the note reads "Set by 15-year fixed. Choose Custom to change."
+8. Given the config has no presets (missing or an empty list), when the page loads, then the selector is hidden, the fields are in the usual order (home price, down payment, rate, term, extra payment), the rate and term are editable, and no "Set by …" note is shown.
 
 ### M2. Print a client quote
 **Priority:** Must · **Scope:** Stretch · **Serves:** J-10 · **Status:** Not implemented

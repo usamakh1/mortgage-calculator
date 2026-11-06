@@ -40,8 +40,17 @@ export function createApp(root: HTMLElement, configResult: ConfigResult, deps: A
   // Currency symbol from the config currency and locale ("$" before, "€" after in de-DE).
   const money: Adornment =
     format.currency.position === 'prefix' ? { prefix: format.currency.symbol } : { suffix: format.currency.symbol };
+  // With a loan product selector, rate and term come directly after it (M1.1);
+  // without one, the usual order starts with the home price (M1.8).
+  const hasPresets = config.presets.length > 0;
+  const fieldOrder: Field[] = hasPresets
+    ? ['interestRate', 'termYears', 'homePrice', 'downPayment', 'extraPayment']
+    : ['homePrice', 'downPayment', 'interestRate', 'termYears', 'extraPayment'];
+  const orderedFields = fieldOrder
+    .map((field) => FORM_FIELDS.find((spec) => spec.field === field))
+    .filter((spec): spec is (typeof FORM_FIELDS)[number] => spec !== undefined);
   const form = createForm(
-    FORM_FIELDS,
+    orderedFields,
     {
       homePrice: toInputText(config.defaults.homePrice),
       downPayment: toInputText(config.defaults.downPayment),
@@ -126,23 +135,37 @@ export function createApp(root: HTMLElement, configResult: ConfigResult, deps: A
     }
   };
 
-  // Loan product selector (M1): fills rate and term, then recalculates.
-  const presetSelector = createPresetSelector(config.presets, (preset) => {
-    const rate = form.inputs.interestRate;
-    const term = form.inputs.termYears;
-    if (rate) rate.value = toInputText(preset.ratePercent);
-    if (term) term.value = toInputText(preset.termYears);
-    update();
-  });
-  if (presetSelector) form.element.prepend(presetSelector.element);
+  // Loan product selector (M1): a product fills and locks rate and term; "Custom" unlocks them
+  // and keeps their current values (M1.4, M1.6).
+  const LOCK_NOTE_ID = 'field-lock-note';
+  const lockNote = document.createElement('p');
+  lockNote.id = LOCK_NOTE_ID;
+  lockNote.className = 'field-hint lock-note';
+  lockNote.hidden = true;
+  const lockedFields: Field[] = ['interestRate', 'termYears'];
 
-  form.element.addEventListener('input', (event) => {
-    // Editing rate or term means the figures no longer match the product (M1.4);
-    // price, down payment and extra payment are not part of a preset (M1.5).
-    const target = event.target;
-    if (target === form.inputs.interestRate || target === form.inputs.termYears) presetSelector?.markCustom();
+  const presetSelector = createPresetSelector(config.presets, (preset) => {
+    for (const field of lockedFields) form.setLocked(field, preset !== null, LOCK_NOTE_ID);
+    if (preset) {
+      const rate = form.inputs.interestRate;
+      const term = form.inputs.termYears;
+      if (rate) rate.value = toInputText(preset.ratePercent);
+      if (term) term.value = toInputText(preset.termYears);
+      lockNote.textContent = UI_TEXT.lockedBy(preset.name); // plain text
+      lockNote.hidden = false;
+    } else {
+      lockNote.textContent = '';
+      lockNote.hidden = true;
+    }
     update();
   });
+  if (presetSelector) {
+    form.element.prepend(presetSelector.element);
+    // The note sits directly under the rate and term fields (M1.4).
+    form.wrapperOf('termYears')?.after(lockNote);
+  }
+
+  form.element.addEventListener('input', update);
   form.element.addEventListener('focusout', (event) => {
     const target = event.target;
     if (!(target instanceof HTMLInputElement)) return;

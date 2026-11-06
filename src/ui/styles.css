@@ -318,6 +318,26 @@ h1 {
   border-left: 1px solid var(--border);
 }
 
+/* Locked by a loan product (M1.4): readonly, so the text keeps full contrast and stays focusable.
+   Dashed border + sunken background say "set elsewhere"; the note under the fields says why. */
+.field.is-locked .input-group {
+  border-style: dashed;
+  background: var(--surface-sunken);
+}
+
+.field.is-locked input {
+  cursor: default;
+}
+
+.lock-note {
+  margin-top: calc(var(--space-2) * -1);
+  padding: var(--space-2) var(--space-3);
+  border-left: 3px solid var(--brand);
+  border-radius: var(--radius-sm);
+  background: var(--brand-soft);
+  color: var(--text);
+}
+
 .field.has-error .input-group {
   border: 2px solid var(--error);
 }
