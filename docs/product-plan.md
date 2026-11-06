@@ -59,7 +59,7 @@ The assignment allows 2 to 4 hours, and every story marked Implemented must pass
 | **Core (will build and test)** | L1, L2, L3, L5, L8, L10, M1, A1, A2, A3, A4, A5 | A3 covers the on-screen footer only. A5 covers local run, unit tests and build. L10 is verified by a manual check in Chrome, Edge, Firefox and Safari, written up in the README. L8.6 is verified by boundary and extreme-value unit tests plus a loop over about 1,000 random inputs. |
 | **Stretch (only if time allows)** | L4, L7, M2, A6 | A6 is a small Playwright smoke test on Chromium, Firefox and WebKit plus the "no external requests" check. |
 | **Not in this build (kept as specified future work)** | L6, L9, L11, L12, M3, M4, A7 | A7 is the GitHub Pages deployment. Also not in this build: the axe-core accessibility check, the 10,000-run fuzz test and the 95% coverage target. |
-| **Future (needs a server, see §10)** | L13, M5, M6, A8, A9, A10, A11 | Live market rates, saved client quotes, sign-in, role checks on the server, a settings page and a change log. Specified so the next version is clear; none of it is in this submission. |
+| **Future (see §10 and §11)** | L13, L14, L15, L16, M5, M6, A8, A9, A10, A11 | Live market rates, saved client quotes, sign-in, role checks on the server, a settings page and a change log (§10), plus three Future bets written as stories: an understanding check, plain-language explanations and cost in everyday terms (§11). None of it is in this submission. |
 
 **Priority vs. scope.** MoSCoW priority (Must, Should, Could) is the product view. It says how much the feature matters to users. The tier above is the plan for this submission. So L4, L7 and M2 stay "Must" for the product even though they are Stretch here. L11 is a Should and L12 a Could, and neither is built.
 
@@ -71,7 +71,7 @@ The assignment allows 2 to 4 hours, and every story marked Implemented must pass
 | Core, but not yet Implemented | L10 (built and checked in Chromium; manual check in Chrome, Edge, Firefox and Safari pending), A5 (runs, tests and builds from a fresh clone; the network check was done in Chromium through Playwright, not by hand) |
 | Stretch, not built | L4, L7, M2, A6 |
 | Not in this build | L6, L9, L11, L12, M3, M4, A7 |
-| Future (needs a server) | L13, M5, M6, A8, A9, A10, A11 |
+| Future | L13, L14, L15, L16, M5, M6, A8, A9, A10, A11 |
 
 ## 3. Calculation rules
 
@@ -233,3 +233,61 @@ Status on 2026-11-06: milestones 1–3 done; milestone 4 partly done (the app ru
 | **Privacy** | Data minimisation: a saved quote holds only a client reference, no personal details (M5.7). Loanee inputs are never sent to the server. HTTPS only. A retention period for saved quotes, with deletion after it, and regular backups. | Saved quotes are the first personal-adjacent data the app would hold; collecting as little as possible is the strongest protection. |
 
 **What stays the same:** the calculator works without signing in and without the server (M6.6, L13.3), and every Implemented story keeps passing its criteria.
+
+## 11. Future bets
+
+Ideas we think could make the product clearly better, but have not validated. Each one is a bet: it names who it serves, what we believe will happen, the cheapest way to find out before building, and what could go wrong. Bets 1, 2 and 9 are written as full stories (L14, L15, L16, all Not implemented). The others would get a job and a story only after their test succeeds. **None of this is in the current submission.**
+
+### Bet 1. Understanding check (story L14)
+- **Serves:** Loanee, J-20 (be sure I understand what I'm agreeing to). It turns the Loanee's success measure ("can explain what the loan costs per month and in total") into something we can measure.
+- **Hypothesis:** we believe 2–3 short questions about the user's own results, with one-sentence explanations, will raise the share of Loanees who can state their total interest and payoff date afterwards, from most getting it wrong to most getting it right.
+- **Cheap test:** a clickable prototype with fixed figures, shown to 5–8 people. Ask them to state total interest and payoff date before and after the questions, and count correct answers. No engine work needed.
+- **Main risk:** it feels like a school test, so people skip it or feel judged. Mitigation in L14: optional, never scored or stored.
+
+### Bet 2. Plain-language adviser, numbers only from the engine (story L15)
+- **Serves:** Loanee, J-21 (have my figures explained in plain words).
+- **Hypothesis:** we believe that answers in plain words about the user's own figures, where a model writes only the words and every number comes from the tested engine, will help more Loanees understand their trade-offs than static help text.
+- **Cheap test:** "Wizard of Oz": a person writes the answers from the engine's output for 10 real questions, and we measure understanding afterwards. Separately, run the model offline on 100 engine scenarios and count how often it invents or changes a number; the automatic number check in L15 must block every one.
+- **Main risk:** the model invents or changes a number, or slides into advice, which is both a trust and a regulatory problem. Also, it sends figures off the device, which conflicts with the Loanee's "must never" unless it is opt-in each time (L15.1) or the model runs on the device.
+
+### Bet 3. Life-event simulator
+- **Serves:** Loanee. A candidate job: "When I'm about to commit for decades, I want to know whether I could keep paying if my life changes, so I can choose a loan I can live with."
+- **Hypothesis:** we believe showing how the payment fits the budget after common events (a baby, a job loss, a higher rate at refinance) will lead more Loanees to borrow less or keep a buffer.
+- **Cheap test:** three printed "what if" cards with figures worked out by hand, used in 5 interviews. Count how many people change the loan they would choose.
+- **Main risk:** it needs income and spending, which is personal data, and simple scenarios can look more precise than they are.
+
+### Bet 4. "Probability of trouble" from simulated rate paths
+- **Serves:** Loanee, the same candidate job as bet 3 (relevant for loans whose rate can change at refinance).
+- **Hypothesis:** we believe a plain statement such as "in 1 of 5 simulated futures your payment rises above your limit" will make the risk of a rate rise real in a way a single rate cannot.
+- **Cheap test:** run the simulation offline on historical rate data and check whether it would have flagged past rate shocks; then test with 5 people whether they understand "1 of 5 futures" correctly.
+- **Main risk:** model risk. The result depends heavily on assumptions about future rates, looks precise, and could be read as a forecast or advice.
+
+### Bet 5. Couple mode
+- **Serves:** Loanee, J-7 (get a second opinion on the same numbers).
+- **Hypothesis:** we believe that letting each partner set private limits (maximum payment, maximum term) and showing only the options both accept will help couples agree faster and with less conflict.
+- **Cheap test:** 5 couples each fill in a paper limit sheet separately; we show them only the overlapping options, then ask how it compared with discussing figures openly.
+- **Main risk:** it needs two devices to share data, so a server (§10), and the privacy between partners must be trusted completely.
+
+### Bet 6. Check a lender's offer
+- **Serves:** Loanee. A candidate job: "When a lender gives me an offer, I want to check it matches what I was told, so I can catch mistakes or hidden costs before I sign."
+- **Hypothesis:** we believe reading the offer PDF on the device and flagging differences from the user's own figures (rate, term, payment, total cost) will catch real mismatches that people would otherwise sign.
+- **Cheap test:** collect 10 real offers (with personal details blacked out), compare them by hand with the engine's figures, and count real mismatches and how many different formats there are.
+- **Main risk:** offers vary widely. A wrong reading could give false reassurance ("no problems found"), which is worse than no check. The PDF must never leave the device.
+
+### Bet 7. Office consistency radar
+- **Serves:** Manager, J-8 (an answer that matches what colleagues would say), and the Admin's oversight.
+- **Hypothesis:** we believe showing an office when its quotes for similar clients differ widely will find training gaps and errors that nobody notices today.
+- **Cheap test:** ask 2–3 offices for a month of anonymised quote spreadsheets and look for outliers by hand.
+- **Main risk:** it needs input patterns collected centrally, which directly conflicts with the Loanee's and the Admin's "must never" rules in [App Roles](app-roles.md). It could only use quotes Managers saved deliberately (M5), with the roles document updated first.
+
+### Bet 8. Settings preview
+- **Serves:** Admin, J-12 (change settings without breaking things).
+- **Hypothesis:** we believe showing, before publishing a change, how a set of standard quotes would change (for example, raising "30-year fixed" from 6.5% to 6.75% changes the payment on 300,000 from 1,896.20 to 1,945.79) will stop mistakes from reaching clients.
+- **Cheap test:** show 3 Admins a mock-up and ask them to spot a deliberately wrong rate, with and without the preview; also check how often settings mistakes happen today.
+- **Main risk:** low value if settings change rarely. The standard quotes must be chosen well, or the preview hides the cases that matter.
+
+### Bet 9. Cost in everyday terms (story L16)
+- **Serves:** Loanee, J-2 (understand the true total cost).
+- **Hypothesis:** we believe putting interest in everyday terms ("about 193 of your monthly payments", "$82.93 of every $100 in year one is interest", "about 19 years of your rent") will make the size of the interest land better than a single total.
+- **Cheap test:** a five-second test with two versions of the results card (with and without the sentences), 10 people each; ask them to recall how much the interest is.
+- **Main risk:** comparisons can mislead if they rely on outside data. L16 uses only the user's own figures, and rent only if they enter it.

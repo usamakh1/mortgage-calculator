@@ -64,6 +64,18 @@ When I'm working out what a loan will cost me, I want to know the rates lenders 
 - **Today:** Search lenders' websites one by one, or use a rate remembered from the news or from a friend's loan.
 - **What goes wrong:** Rates change weekly, so remembered rates are often out of date, and advertised "from" rates hide what most people actually get. A plan built on the wrong rate falls apart at the bank.
 
+### J-20 (Loanee). Be sure I understand what I'm agreeing to
+When I am about to commit to a loan for decades, I want to be sure I really understand what I'm agreeing to, so I can decide with confidence and avoid surprises later.
+
+- **Today:** Nod along in the bank meeting, read the offer at home, and hope nothing important was missed.
+- **What goes wrong:** People feel they understood but can't say what the loan costs in total or when it ends, and find out years later that most of their early payments went to interest.
+
+### J-21 (Loanee). Have my figures explained in plain words
+When I don't understand what the figures mean for my situation, I want someone to explain them in plain words, so I can make my own decision without depending on a salesperson.
+
+- **Today:** Ask the lender (who wants to sell), a friend (who may be wrong), or search online for general articles.
+- **What goes wrong:** Lenders explain selectively, friends and articles talk about other people's loans, and paid advice is expensive, so many people decide without really understanding.
+
 ---
 
 ## Manager jobs
@@ -141,7 +153,7 @@ Every story serves exactly one job, and every job has at least one story. Status
 | Job | Role | User stories |
 |---|---|---|
 | J-1 | Loanee | L1, L8, L9, L12 |
-| J-2 | Loanee | L2 |
+| J-2 | Loanee | L2, L16 |
 | J-3 | Loanee | L4, L11 |
 | J-4 | Loanee | L5 |
 | J-5 | Loanee | L6 |
@@ -159,3 +171,5 @@ Every story serves exactly one job, and every job has at least one story. Status
 | J-17 | Manager | M5 |
 | J-18 | Manager | M6 |
 | J-19 | Loanee | L13 |
+| J-20 | Loanee | L14 |
+| J-21 | Loanee | L15 |
