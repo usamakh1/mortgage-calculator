@@ -15,7 +15,12 @@ export interface ScheduleView {
   showMessage(text: string): void;
 }
 
-export function createSchedule(format: Formatters, download: (filename: string, text: string) => void): ScheduleView {
+export function createSchedule(
+  format: Formatters,
+  download: (filename: string, text: string) => void,
+  /** Called when a click handler fails, so the app can show E9 instead of failing silently. */
+  onError: (error: unknown) => void,
+): ScheduleView {
   let mode: ScheduleMode = 'monthly';
   let rows: readonly ScheduleRow[] = [];
 
@@ -43,8 +48,12 @@ export function createSchedule(format: Formatters, download: (filename: string, 
     button.dataset.mode = value;
     button.textContent = label;
     button.addEventListener('click', () => {
-      mode = value;
-      render();
+      try {
+        mode = value;
+        render();
+      } catch (error) {
+        onError(error);
+      }
     });
     return button;
   };
@@ -57,7 +66,13 @@ export function createSchedule(format: Formatters, download: (filename: string, 
   csvButton.className = 'csv-button';
   csvButton.textContent = UI_TEXT.downloadCsv;
   // Always the monthly rows, whatever the view (L3.5).
-  csvButton.addEventListener('click', () => download(CSV_FILENAME, scheduleCsv(rows)));
+  csvButton.addEventListener('click', () => {
+    try {
+      download(CSV_FILENAME, scheduleCsv(rows));
+    } catch (error) {
+      onError(error); // e.g. downloads blocked by the browser
+    }
+  });
 
   toolbar.append(toggle, csvButton);
   head.append(heading, toolbar);

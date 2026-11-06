@@ -71,7 +71,8 @@ export function createApp(root: HTMLElement, configResult: ConfigResult, deps: A
 
   const main = document.createElement('main');
   main.className = 'layout';
-  const schedule = createSchedule(format, download);
+  // showUnexpectedError is defined below; it is only called later, from a click.
+  const schedule = createSchedule(format, download, (error) => showUnexpectedError(error));
   main.append(formSection, results.element, schedule.element);
 
   const banner = createBanner(notice);
@@ -155,10 +156,4 @@ export function createApp(root: HTMLElement, configResult: ConfigResult, deps: A
 
   update();
   return { showUnexpectedError };
-}
-
-/** Last-resort handlers so the page never goes blank (L8.19). */
-export function installGlobalErrorHandlers(app: AppHandle): void {
-  window.addEventListener('error', (event) => app.showUnexpectedError(event.error ?? event.message));
-  window.addEventListener('unhandledrejection', (event) => app.showUnexpectedError(event.reason));
 }

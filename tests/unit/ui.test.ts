@@ -759,3 +759,52 @@ describe('Loan product selector (M1)', () => {
     expect(root.querySelector('#field-preset-description i, select b')).toBeNull();
   });
 });
+
+describe('Error paths inside the running app (L8.19)', () => {
+  const E9_TEXT = 'Something went wrong. Your inputs are kept; please try again.';
+
+  it('a rendering failure (the schedule cannot be drawn) shows E9 instead of a half-drawn page', () => {
+    start();
+    const spy = vi.spyOn(Element.prototype, 'replaceWith').mockImplementation(() => {
+      throw new Error('render failure');
+    });
+    type('interestRate', '5');
+    spy.mockRestore();
+    expect(resultsText()).toBe(E9_TEXT);
+    expect(root.querySelector('.schedule-body')?.textContent).toBe(E9_TEXT);
+    expect(input('interestRate').value).toBe('5');
+    expect(errorSpy).toHaveBeenCalled();
+  });
+
+  it('switching the schedule view fails → E9, not an uncaught error', () => {
+    start();
+    const spy = vi.spyOn(Element.prototype, 'replaceWith').mockImplementation(() => {
+      throw new Error('render failure');
+    });
+    expect(() => root.querySelector<HTMLButtonElement>('.schedule [data-mode="yearly"]')!.click()).not.toThrow();
+    spy.mockRestore();
+    expect(resultsText()).toBe(E9_TEXT);
+  });
+
+  it('Download CSV fails (e.g. downloads blocked) → E9, not an uncaught error', () => {
+    start({}, {
+      download: () => {
+        throw new Error('download blocked');
+      },
+    });
+    expect(() => root.querySelector<HTMLButtonElement>('.schedule .csv-button')!.click()).not.toThrow();
+    expect(resultsText()).toBe(E9_TEXT);
+    expect(errorSpy).toHaveBeenCalled();
+  });
+
+  it('after an E9, fixing or changing an input brings the results back', () => {
+    start({}, {
+      download: () => {
+        throw new Error('download blocked');
+      },
+    });
+    root.querySelector<HTMLButtonElement>('.schedule .csv-button')!.click();
+    type('interestRate', '5');
+    expect(result('monthly-payment')).toBe('$1,610.46');
+  });
+});
