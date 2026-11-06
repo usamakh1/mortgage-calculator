@@ -17,8 +17,8 @@ A mortgage calculator that runs entirely in the browser. It shows the monthly pa
 **Prerequisites:** [Node.js](https://nodejs.org) 22.12 or newer. Nothing else: no accounts, API keys or cloud services.
 
 ```sh
-git clone https://github.com/usamakh1/mortgage-calculator-.git
-cd mortgage-calculator-
+git clone https://github.com/usamakh1/mortgage-calculator.git
+cd mortgage-calculator
 npm install
 npm run dev        # prints http://localhost:5173 — open it
 npm test           # unit tests (Vitest)
