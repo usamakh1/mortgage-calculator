@@ -13,6 +13,7 @@ import { createFormatters, toInputText } from './format';
 import { createBanner, createFooter, createHeader } from './layout';
 import { createResults } from './results';
 import { createSchedule } from './schedule';
+import { createPresetSelector } from './presets';
 import { downloadText } from './csv';
 
 export interface AppDependencies {
@@ -46,6 +47,8 @@ export function createApp(root: HTMLElement, configResult: ConfigResult, deps: A
       downPayment: toInputText(config.defaults.downPayment),
       interestRate: toInputText(config.defaults.ratePercent),
       termYears: toInputText(config.defaults.termYears),
+      // A default of 0 shows as an empty, optional field (config schema, Q11).
+      extraPayment: config.defaults.extraPayment === 0 ? '' : toInputText(config.defaults.extraPayment),
     },
     {
       homePrice: money,
@@ -111,7 +114,7 @@ export function createApp(root: HTMLElement, configResult: ConfigResult, deps: A
         showMessage(calc.error === 'E7' ? MESSAGES.E7 : MESSAGES.E10);
         return;
       }
-      if (!results.showResult(calc.result, outcome.values.principalCents)) {
+      if (!results.showResult(calc.result, outcome.values.principalCents, outcome.values.extraMonthlyCents)) {
         console.error('Calculation produced a value that is not a safe amount', calc.result);
         showMessage(MESSAGES.E10);
         return;
@@ -122,7 +125,23 @@ export function createApp(root: HTMLElement, configResult: ConfigResult, deps: A
     }
   };
 
-  form.element.addEventListener('input', update);
+  // Loan product selector (M1): fills rate and term, then recalculates.
+  const presetSelector = createPresetSelector(config.presets, (preset) => {
+    const rate = form.inputs.interestRate;
+    const term = form.inputs.termYears;
+    if (rate) rate.value = toInputText(preset.ratePercent);
+    if (term) term.value = toInputText(preset.termYears);
+    update();
+  });
+  if (presetSelector) form.element.prepend(presetSelector.element);
+
+  form.element.addEventListener('input', (event) => {
+    // Editing rate or term means the figures no longer match the product (M1.4);
+    // price, down payment and extra payment are not part of a preset (M1.5).
+    const target = event.target;
+    if (target === form.inputs.interestRate || target === form.inputs.termYears) presetSelector?.markCustom();
+    update();
+  });
   form.element.addEventListener('focusout', (event) => {
     const target = event.target;
     if (!(target instanceof HTMLInputElement)) return;

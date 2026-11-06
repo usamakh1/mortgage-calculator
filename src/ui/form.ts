@@ -11,12 +11,12 @@ export interface FieldSpec {
   inputMode: 'decimal' | 'numeric';
 }
 
-/** Fields shown in 5a. Extra payment is added in 5c. */
 export const FORM_FIELDS: readonly FieldSpec[] = [
   { field: 'homePrice', label: UI_TEXT.homePrice, inputMode: 'decimal' },
   { field: 'downPayment', label: UI_TEXT.downPayment, inputMode: 'decimal' },
   { field: 'interestRate', label: UI_TEXT.interestRate, inputMode: 'decimal' },
   { field: 'termYears', label: UI_TEXT.termYears, inputMode: 'numeric' },
+  { field: 'extraPayment', label: UI_TEXT.extraPayment, inputMode: 'decimal' },
 ];
 
 export interface FormView {

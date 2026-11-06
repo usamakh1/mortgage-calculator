@@ -9,7 +9,8 @@ import { principalInterestShares, type Formatters } from './format';
 export interface ResultsView {
   element: HTMLElement;
   /** Renders the figures. Returns false (and renders nothing) if any value is unsafe (L8.20). */
-  showResult(result: LoanResult, principalCents: number): boolean;
+  /** `extraCents` is the extra payment as entered (row values are capped at what is owed). */
+  showResult(result: LoanResult, principalCents: number, extraCents: number): boolean;
   showMessage(text: string): void;
 }
 
@@ -77,8 +78,9 @@ export function createResults(format: Formatters): ResultsView {
 
   return {
     element: section,
-    showResult(result, principalCents) {
+    showResult(result, principalCents, extraCents) {
       const amounts = [principalCents, result.monthlyPaymentCents, result.totalInterestCents, result.totalPaidCents];
+      if (result.savings) amounts.push(result.savings.monthsSaved, result.savings.interestSavedCents, extraCents);
       const dates = [result.payoff.year, result.payoff.month];
       if (!amounts.every(isSafeAmount) || !dates.every((n) => Number.isSafeInteger(n) && n > 0)) {
         return false;
@@ -102,6 +104,18 @@ export function createResults(format: Formatters): ResultsView {
       );
 
       const parts: HTMLElement[] = [hero, grid];
+      // Only with an extra payment above 0 (L5.3).
+      if (result.savings) {
+        const savings = el('div', 'savings');
+        const intro = el('p', 'savings-title', UI_TEXT.savingsIntro(format.money(extraCents)));
+        const list = el('dl', 'savings-list');
+        list.append(
+          stat(UI_TEXT.monthsSaved, UI_TEXT.monthsCount(result.savings.monthsSaved), 'months-saved'),
+          stat(UI_TEXT.interestSaved, format.money(result.savings.interestSavedCents), 'interest-saved'),
+        );
+        savings.append(intro, list);
+        parts.push(savings);
+      }
       const chart = breakdown(principalCents, result.totalInterestCents);
       if (chart) parts.push(chart);
       body.replaceChildren(...parts);

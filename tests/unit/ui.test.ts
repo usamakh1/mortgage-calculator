@@ -552,3 +552,210 @@ describe('Schedule (L3)', () => {
     for (const th of root.querySelectorAll('.schedule thead th')) expect(th.getAttribute('scope')).toBe('col');
   });
 });
+
+describe('Extra monthly payment (L5)', () => {
+  const tableRows = (): string[][] =>
+    [...root.querySelectorAll('.schedule tbody tr')].map((tr) => [...tr.children].map((td) => td.textContent ?? ''));
+  const L5_1 = { homePrice: '300000', downPayment: '0', interestRate: '6', termYears: '30' };
+
+  it('the field is labelled, has the currency prefix and starts empty when the default is 0', () => {
+    start();
+    expect(root.querySelector('label[for="field-extraPayment"]')?.textContent).toBe('Extra monthly payment');
+    expect(input('extraPayment').value).toBe('');
+    expect(input('extraPayment').parentElement!.querySelector('.adornment-prefix')?.textContent).toBe('$');
+  });
+
+  it('a config default of 100 is prefilled', () => {
+    start({ defaults: { extraPayment: 100 } });
+    expect(input('extraPayment').value).toBe('100');
+  });
+
+  it('L5.1: extra 200 → payoff February 2050, 81 months and 91,173.87 saved, interest 256,341.57, 279 rows', () => {
+    start();
+    enter({ ...L5_1, extraPayment: '200' });
+    expect(result('payoff-date')).toBe('February 2050');
+    expect(result('months-saved')).toBe('81 months');
+    expect(result('interest-saved')).toBe('$91,173.87');
+    expect(result('total-interest')).toBe('$256,341.57');
+    expect(root.querySelector('.savings-title')?.textContent).toBe('Paying $200.00 extra each month');
+    const rows = tableRows();
+    expect(rows).toHaveLength(279);
+    expect(rows[0]?.[2]).toBe('$1,998.65');
+    expect(rows[0]?.[5]).toBe('$200.00');
+    expect(rows[278]?.[2]).toBe('$716.87');
+    expect(rows[278]?.[5]).toBe('$0.00');
+    expect(rows[278]?.[6]).toBe('$0.00');
+  });
+
+  it('L5.2: extra 400,000 → 1 row of 301,500.00, 359 months and 346,015.44 saved, no negative balance', () => {
+    start();
+    enter({ ...L5_1, extraPayment: '400000' });
+    const rows = tableRows();
+    expect(rows).toHaveLength(1);
+    expect(rows[0]?.[2]).toBe('$301,500.00');
+    expect(rows[0]?.[6]).toBe('$0.00');
+    expect(result('months-saved')).toBe('359 months');
+    expect(result('interest-saved')).toBe('$346,015.44');
+    // The summary names the amount entered, not the capped amount in row 1 (299,701.35).
+    expect(root.querySelector('.savings-title')?.textContent).toBe('Paying $400,000.00 extra each month');
+    expect(root.querySelector('.schedule')?.textContent).not.toMatch(/-\$|\$-/);
+  });
+
+  it.each(['0', ''])('L5.3: extra "%s" → same results as without, and no savings summary', (extraPayment) => {
+    start();
+    enter({ ...L5_1, extraPayment });
+    expect(result('total-interest')).toBe('$347,515.44');
+    expect(result('payoff-date')).toBe('November 2056');
+    expect(root.querySelector('.savings')).toBeNull();
+    expect(result('months-saved')).toBeNull();
+    expect(tableRows()).toHaveLength(360);
+  });
+
+  it.each(['-50', 'abc', '10,000,000.01'])('L5.4: extra "%s" → E6 under the field and E8 in the results', (extraPayment) => {
+    start();
+    type('extraPayment', extraPayment);
+    leave('extraPayment');
+    expect(errorText('extraPayment')).toBe('!Enter an extra payment between 0 and 10,000,000.');
+    expect(resultsText()).toBe(E8);
+  });
+
+  it('L5.5: extra 10,000,000 is accepted: no error, 1 row of 301,500.00', () => {
+    start();
+    enter({ ...L5_1, extraPayment: '10000000' });
+    leave('extraPayment');
+    expect(errorText('extraPayment')).toBe('');
+    expect(tableRows()).toHaveLength(1);
+    expect(tableRows()[0]?.[2]).toBe('$301,500.00');
+  });
+
+  it('L5.6: E6 for -50 disappears when changed to 200, and the L5.1 results appear', () => {
+    start();
+    enter(L5_1);
+    type('extraPayment', '-50');
+    leave('extraPayment');
+    expect(errorText('extraPayment')).toContain('Enter an extra payment');
+    type('extraPayment', '200');
+    expect(errorText('extraPayment')).toBe('');
+    expect(result('months-saved')).toBe('81 months');
+    expect(result('interest-saved')).toBe('$91,173.87');
+  });
+
+  it('L5.8: on 15 March 2027 the payoff date is June 2050 and months saved is still 81', () => {
+    start({}, { today: () => new Date(2027, 2, 15) });
+    enter({ ...L5_1, extraPayment: '200' });
+    expect(result('payoff-date')).toBe('June 2050');
+    expect(result('months-saved')).toBe('81 months');
+  });
+
+  it('a single month saved reads "1 month"', () => {
+    start();
+    // 120,000 at 0% over 10 years: 1,000/month; an extra 9 per month saves exactly 1 month.
+    enter({ homePrice: '120000', downPayment: '0', interestRate: '0', termYears: '10', extraPayment: '9' });
+    expect(result('months-saved')).toBe('1 month');
+  });
+});
+
+describe('Loan product selector (M1)', () => {
+  const PRESETS = {
+    presets: [
+      { id: 'f30', name: '30-year fixed', ratePercent: 6.5, termYears: 30, description: 'Our standard 30-year loan' },
+      { id: 'f15', name: '15-year fixed', ratePercent: 5.75, termYears: 15, description: 'Lower total interest' },
+    ],
+  };
+  const select = (): HTMLSelectElement => root.querySelector<HTMLSelectElement>('#field-preset')!;
+  const choose = (value: string): void => {
+    select().value = value;
+    select().dispatchEvent(new Event('change', { bubbles: true }));
+  };
+  const selectedText = (): string => select().selectedOptions[0]?.textContent ?? '';
+  const description = (): string => root.querySelector('#field-preset-description')?.textContent ?? '';
+
+  it('M1.1: "Loan product" lists Custom, 30-year fixed, 15-year fixed in that order, Custom selected', () => {
+    start(PRESETS);
+    expect(root.querySelector('label[for="field-preset"]')?.textContent).toBe('Loan product');
+    expect([...select().options].map((o) => o.textContent)).toEqual(['Custom', '30-year fixed', '15-year fixed']);
+    expect(selectedText()).toBe('Custom');
+  });
+
+  it('M1.2: choosing 15-year fixed fills 5.75 and 15 and updates the payment to 2,491.23', () => {
+    start(PRESETS);
+    enter({ homePrice: '350000', downPayment: '50000' });
+    choose('f15');
+    expect(input('interestRate').value).toBe('5.75');
+    expect(input('termYears').value).toBe('15');
+    expect(result('monthly-payment')).toBe('$2,491.23');
+    expect(root.querySelectorAll('.schedule tbody tr')).toHaveLength(180);
+  });
+
+  it('M1.3: the description appears under the selector, and goes away for Custom', () => {
+    start(PRESETS);
+    expect(description()).toBe('');
+    choose('f15');
+    expect(description()).toBe('Lower total interest');
+    expect(select().getAttribute('aria-describedby')).toBe('field-preset-description');
+    choose('');
+    expect(description()).toBe('');
+  });
+
+  it('M1.4: editing the rate after choosing a preset switches to Custom and uses the new rate', () => {
+    start(PRESETS);
+    enter({ homePrice: '350000', downPayment: '50000' });
+    choose('f15');
+    type('interestRate', '6');
+    expect(selectedText()).toBe('Custom');
+    expect(result('monthly-payment')).toBe('$2,531.57');
+    expect(description()).toBe('');
+  });
+
+  it('M1.4: editing the term also switches to Custom', () => {
+    start(PRESETS);
+    choose('f30');
+    type('termYears', '25');
+    expect(selectedText()).toBe('Custom');
+  });
+
+  it.each(['homePrice', 'downPayment', 'extraPayment'] as const)(
+    'M1.5: changing %s keeps the preset (not part of a preset)',
+    (field) => {
+      start(PRESETS);
+      choose('f15');
+      type(field, '10000');
+      expect(selectedText()).toBe('15-year fixed');
+      expect(description()).toBe('Lower total interest');
+    },
+  );
+
+  it('M1.6: choosing Custom keeps the current field values', () => {
+    start(PRESETS);
+    choose('f15');
+    choose('');
+    expect(selectedText()).toBe('Custom');
+    expect(input('interestRate').value).toBe('5.75');
+    expect(input('termYears').value).toBe('15');
+  });
+
+  it.each([[{}], [{ presets: [] }]])('M1.7: no presets (%j) → no selector, calculator works', (json) => {
+    start(json);
+    expect(root.querySelector('#field-preset')).toBeNull();
+    expect(root.querySelector('label[for="field-preset"]')).toBeNull();
+    expect(result('monthly-payment')).toBe('$1,798.65');
+  });
+
+  it('choosing a preset clears a shown rate error', () => {
+    start(PRESETS);
+    type('interestRate', '31');
+    leave('interestRate');
+    expect(errorText('interestRate')).toContain('Enter an interest rate');
+    choose('f30');
+    expect(errorText('interestRate')).toBe('');
+    expect(result('monthly-payment')).not.toBeNull();
+  });
+
+  it('preset names and descriptions are plain text', () => {
+    start({ presets: [{ id: 'x', name: '<b>Bold</b>', ratePercent: 5, termYears: 15, description: '<i>it</i>' }] });
+    expect([...select().options].map((o) => o.textContent)).toContain('<b>Bold</b>');
+    choose('x');
+    expect(description()).toBe('<i>it</i>');
+    expect(root.querySelector('#field-preset-description i, select b')).toBeNull();
+  });
+});
