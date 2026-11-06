@@ -10,7 +10,7 @@ Each story carries four labels:
 - **Priority** is the product view (MoSCoW: Must, Should, Could).
 - **Scope** is the plan for this submission (Core, Stretch, Not in this build). See [Product plan §2.2](product-plan.md#22-scope-for-this-submission).
 - **Serves** is the job from [Jobs To Be Done](jobs-to-be-done.md).
-- **Status** describes what the app does today. All stories start as Not implemented and are updated after the build.
+- **Status** describes what the app does today (checked on 6 November 2026). A story is Implemented only when every one of its acceptance criteria passes.
 
 ## Shared definitions
 
@@ -79,7 +79,7 @@ Order of checks: field messages (E1, E2, E4, E5, E6) first, each field on its ow
 ## Loanee stories
 
 ### L1. Calculate the monthly payment
-**Priority:** Must · **Scope:** Core · **Serves:** J-1 · **Status:** Not implemented
+**Priority:** Must · **Scope:** Core · **Serves:** J-1 · **Status:** Implemented
 
 As a Loanee, I want to enter a home price, down payment, interest rate and term and see my monthly payment, so that I know whether the loan fits my budget.
 
@@ -95,7 +95,7 @@ The down payment is entered as an amount. Entering it as a percentage is L12.
 7. Given home price 100,000,000, down payment 0, rate 30 and term 40 (maximum values), when I enter them, then the monthly payment shows 2,500,017.80, written out in full (no exponent notation), and no field shows `NaN` or `Infinity`.
 
 ### L2. See the total cost of the loan
-**Priority:** Must · **Scope:** Core · **Serves:** J-2 · **Status:** Not implemented
+**Priority:** Must · **Scope:** Core · **Serves:** J-2 · **Status:** Implemented
 
 As a Loanee, I want to see the total interest, total paid and payoff date, so that I understand the full cost, not just the monthly amount.
 
@@ -108,7 +108,7 @@ As a Loanee, I want to see the total interest, total paid and payoff date, so th
 6. Given today is any date and a 30-year loan, when results appear, then the payoff date is 359 months after the month of the first payment, which is the month after today. For example, on 15 March 2027 the payoff date is March 2057, and on 31 December 2026 it is December 2056.
 
 ### L3. View and export the amortization schedule
-**Priority:** Must · **Scope:** Core · **Serves:** J-6 · **Status:** Not implemented
+**Priority:** Must · **Scope:** Core · **Serves:** J-6 · **Status:** Implemented
 
 As a Loanee, I want to see each payment split into principal and interest and download it, so that I can see how my balance falls over time.
 
@@ -140,7 +140,7 @@ As a Loanee, I want to compare up to 3 loan scenarios, so that I can choose the 
 8. Given any input is invalid, when I look at "Add to comparison", then it is disabled and existing columns are unchanged.
 
 ### L5. Model extra payments
-**Priority:** Must · **Scope:** Core · **Serves:** J-4 · **Status:** Not implemented
+**Priority:** Must · **Scope:** Core · **Serves:** J-4 · **Status:** Implemented
 
 As a Loanee, I want to add a fixed extra monthly payment, so that I can see how much interest and time I'd save.
 
@@ -185,7 +185,7 @@ As a Loanee, I want a link and a printable summary, so that I can discuss the nu
 8. Given any input is invalid, when I look at the Print button, then it is disabled and E17 is shown next to it.
 
 ### L8. Get clear messages for invalid input
-**Priority:** Must · **Scope:** Core · **Serves:** J-1 · **Status:** Not implemented
+**Priority:** Must · **Scope:** Core · **Serves:** J-1 · **Status:** Implemented
 
 As a Loanee, I want clear messages when I enter something wrong, so that I can fix it and trust the results.
 
@@ -233,7 +233,7 @@ As a Loanee, I want to add property tax, home insurance and monthly fees, so tha
 6. Given the results of criterion 1, when I change the insurance to 2,400, then the total updates to 2,348.65.
 
 ### L10. Use it on my phone and in any current browser
-**Priority:** Must · **Scope:** Core · **Serves:** J-14 · **Status:** Not implemented
+**Priority:** Must · **Scope:** Core · **Serves:** J-14 · **Status:** Not implemented. Built and checked in Chromium only (360 px layout, visible focus); not yet verified by hand in Chrome, Edge, Firefox and Safari, and the README browser record (L10.1) does not exist yet.
 
 As a Loanee, I want the calculator to work on my phone and in whichever current browser I use, so that I can check numbers wherever I am.
 
@@ -270,7 +270,7 @@ As a Loanee, I want to enter my down payment as a percentage of the home price, 
 ## Manager stories
 
 ### M1. Apply loan product presets
-**Priority:** Must · **Scope:** Core · **Serves:** J-9 · **Status:** Not implemented
+**Priority:** Must · **Scope:** Core · **Serves:** J-9 · **Status:** Implemented
 
 As a Manager, I want to pick one of our loan products from a list, so that the rate and term are filled in correctly and consistently.
 
@@ -325,7 +325,7 @@ As a Manager, I want to add several presets to the comparison in one step, so th
 ## Admin stories
 
 ### A1. Configure locale, currency and defaults
-**Priority:** Must · **Scope:** Core · **Serves:** J-11 · **Status:** Not implemented
+**Priority:** Must · **Scope:** Core · **Serves:** J-11 · **Status:** Not implemented. All criteria pass except A1.5, which needs the README. Re-check when the README exists.
 
 As an Admin, I want to set the currency, locale, default values and limits in a config file, so that the calculator fits our market without code changes.
 
@@ -353,7 +353,7 @@ As an Admin, I want to set the currency, locale, default values and limits in a 
 5. Given the README, when an Admin reads its configuration section, then every config key appears with its type, built-in default and an example.
 
 ### A2. Define loan product presets
-**Priority:** Must · **Scope:** Core · **Serves:** J-11 · **Status:** Not implemented
+**Priority:** Must · **Scope:** Core · **Serves:** J-11 · **Status:** Implemented
 
 As an Admin, I want to define loan products in the config, so that Managers quote only current products.
 
@@ -365,7 +365,7 @@ As an Admin, I want to define loan products in the config, so that Managers quot
 5. Given `presets` is not a list, when the page loads, then no selector is shown and E12 names `presets`.
 
 ### A3. Set the disclaimer and office name (on-screen footer)
-**Priority:** Must · **Scope:** Core · **Serves:** J-11 · **Status:** Not implemented
+**Priority:** Must · **Scope:** Core · **Serves:** J-11 · **Status:** Implemented
 
 As an Admin, I want to set the office name and disclaimer text, so that every screen shows our name and the required wording.
 
@@ -379,7 +379,7 @@ The printed quote's office name and disclaimer belong to L7 and M2.
 5. Given `officeName` is missing, when the page loads, then the footer shows only the disclaimer, with no empty label.
 
 ### A4. Fail safely on a bad configuration
-**Priority:** Must · **Scope:** Core · **Serves:** J-12 · **Status:** Not implemented
+**Priority:** Must · **Scope:** Core · **Serves:** J-12 · **Status:** Implemented
 
 As an Admin, I want clear feedback when my config is wrong, so that I can fix it while users still get a working calculator.
 
@@ -396,7 +396,7 @@ As an Admin, I want clear feedback when my config is wrong, so that I can fix it
 8. Given each malformed config above (unit tests), when `loadConfig` runs, then it never throws and returns a complete, valid config.
 
 ### A5. Run and build locally with free tools
-**Priority:** Must · **Scope:** Core · **Serves:** J-13 · **Status:** Not implemented
+**Priority:** Must · **Scope:** Core · **Serves:** J-13 · **Status:** Not implemented. A5.2 and A5.3 pass; A5.1 and the README record in A5.4 need the README. Re-check when the README exists.
 
 As an Admin, I want to run, test and build the app with free tools only, so that we have no cost or third-party data risk.
 

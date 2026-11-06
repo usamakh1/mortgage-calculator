@@ -1,6 +1,6 @@
 # Mortgage Calculator: Product & Build Plan
 
-**Status:** Draft v1.1 · **Date:** 2026-11-06 · **Owner:** Engineering
+**Status:** v1.2, updated after the build · **Date:** 2026-11-06 · **Owner:** Engineering
 
 Related documents:
 - [App Roles](app-roles.md)
@@ -17,7 +17,7 @@ Related documents:
 | **Secondary user** | The **Manager**, a loan officer or mortgage broker who prepares quotes for clients. | Today they build quotes in personal spreadsheets, which drift, contain formula errors, and look different in every branch. A shared, tested calculator gives consistent numbers. |
 | **Supporting user** | The **Admin**, the person who deploys the app for an office (IT staff or a technical broker). | Someone has to set the currency, defaults, limits, loan product presets and disclaimer. This should be one config file, not a code change. |
 | **Core problem** | "What will this loan really cost me each month and in total, and how do my choices (down payment, term, rate, extra payments) change that?" | This is the decision people get wrong. The monthly payment alone hides that a 30-year loan can cost more in interest than the amount borrowed. |
-| **Scope boundary** | A **calculator and comparison tool**, not a loan application, credit check or rate marketplace. | Keeps the app free of personal data, accounts and servers, which the requirements demand anyway. |
+| **Scope boundary** | A **loan calculator** (side-by-side comparison is planned as L4, not built), not a loan application, credit check or rate marketplace. | Keeps the app free of personal data, accounts and servers, which the requirements demand anyway. |
 | **Architecture** | **100% client-side** static web app. No backend, no accounts, no API keys, no tracking. | Meets the "run locally with no paid services" requirement, avoids storing financial data, and can be hosted free on any static host. |
 | **How roles are enforced** | Roles are **responsibilities, not logins**. The Admin acts through `public/config.json` and deployment. Manager and Loanee use the same UI. | Any login in a purely client-side app would be fake security, because anyone can bypass it in the browser's developer tools. If real access control is ever needed, it requires a backend (see §9). |
 
@@ -25,24 +25,26 @@ Related documents:
 
 ### 2.1 What the product does (v1, product view)
 
-**Must have**
-1. Monthly principal-and-interest payment from home price, down payment, interest rate and term.
-2. Total amount paid, total interest, and payoff date.
-3. Full amortization schedule (monthly and yearly views), exportable to CSV.
-4. Clear, field-level validation. No crash, `NaN`, `Infinity` or negative output ever reaches the screen.
-5. Correct handling of a 0% interest rate (the standard formula divides by zero there).
-6. Side-by-side comparison of up to 3 scenarios.
-7. Effect of extra monthly payments: interest saved and months saved.
-8. Shareable URL that restores a scenario; printable quote summary.
-9. Admin config file: currency, locale, defaults, input limits, loan product presets, disclaimer.
-10. Works in current Chrome, Edge, Firefox and Safari, on phone and desktop widths.
+This is the full product plan. Each item says whether it exists in this build.
 
-**Should have**
+**Must have**
+1. Monthly principal-and-interest payment from home price, down payment, interest rate and term. **Built.**
+2. Total amount paid, total interest, and payoff date. **Built.**
+3. Full amortization schedule (monthly and yearly views), exportable to CSV. **Built.**
+4. Clear, field-level validation. No crash, `NaN`, `Infinity` or negative output ever reaches the screen. **Built.**
+5. Correct handling of a 0% interest rate (the standard formula divides by zero there). **Built.**
+6. Side-by-side comparison of up to 3 scenarios. **Not built** (L4).
+7. Effect of extra monthly payments: interest saved and months saved. **Built.**
+8. Shareable URL that restores a scenario; printable quote summary. **Not built** (L7, M2, M3).
+9. Admin config file: currency, locale, defaults, input limits, loan product presets, disclaimer. **Built.**
+10. Works in current Chrome, Edge, Firefox and Safari, on phone and desktop widths. **Built; checked in Chromium only.** The manual check in the four browsers is still to be done (L10).
+
+**Should have** (none built)
 - Estimated monthly housing cost including property tax, home insurance and fees.
 - Reverse calculation: "What can I borrow for a monthly budget of X?"
 - Remember the last scenario in the browser (local storage only, never sent anywhere).
 
-**Could have**
+**Could have** (not built)
 - Down payment entered as a percentage of the home price.
 
 **Won't have in v1**
@@ -60,7 +62,14 @@ The assignment allows 2 to 4 hours, and every story marked Implemented must pass
 
 **Priority vs. scope.** MoSCoW priority (Must, Should, Could) is the product view. It says how much the feature matters to users. The tier above is the plan for this submission. So L4, L7 and M2 stay "Must" for the product even though they are Stretch here. L11 is a Should and L12 a Could, and neither is built.
 
-Statuses in [User Stories](user-stories.md) start as "Not implemented" and are updated after the build, based on what the app actually does.
+**Result of this build** (statuses in [User Stories](user-stories.md)):
+
+| Status | Stories |
+|---|---|
+| Implemented (every criterion passes) | L1, L2, L3, L5, L8, M1, A2, A3, A4 |
+| Core, but not yet Implemented | L10 (built and checked in Chromium; manual check in Chrome, Edge, Firefox and Safari pending), A1 and A5 (waiting for the README: A1.5, A5.1, A5.4) |
+| Stretch, not built | L4, L7, M2, A6 |
+| Not in this build | L6, L9, L11, L12, M3, M4, A7 |
 
 ## 3. Calculation rules
 
@@ -113,9 +122,9 @@ Reverse calculation (Should, not in this build): a budget of 1,798.65 at 6% over
 | Language | TypeScript | Types catch unit mistakes (percent vs. fraction, years vs. months) early. |
 | UI | Plain TypeScript + HTML/CSS, no framework | Small app. Fewer dependencies mean fewer things to break for a reviewer. |
 | Build / dev server | Vite | Free, one command to start, outputs plain static files. |
-| Unit tests | Vitest | Same toolchain as Vite. Tests the calculation engine, validation and config loading. |
+| Unit tests | Vitest, with happy-dom for the UI tests | Same toolchain as Vite. Tests the engine, parsing, validation, config loading, CSV and the UI (DOM) behaviour. |
 | Browser check (Core) | Manual checklist in current Chrome, Edge, Firefox and Safari, results recorded in the README | Directly verifies the browser requirement without adding Playwright to the core build. |
-| Browser tests (Stretch) | Playwright smoke test on Chromium, Firefox and WebKit (A6) | Automates the same check if time allows. |
+| Browser tests (Stretch, not built) | Playwright smoke test on Chromium, Firefox and WebKit (A6) | Would automate the same check. |
 | Number formatting | `Intl.NumberFormat` | Built into all target browsers. Handles currency and locale. |
 | Hosting | Local only for this submission. GitHub Pages (A7) is future work. | The assignment requires a local run with no cloud services. |
 
@@ -123,15 +132,16 @@ Reverse calculation (Should, not in this build): a budget of 1,798.65 at 6% over
 
 ```
 src/
-  engine/       amortize.ts, validate.ts, parse.ts       ← pure functions, no DOM, unit tested
-  config/       loadConfig.ts, defaults.ts, schema.ts    ← reads and validates public/config.json
-  ui/           form.ts, results.ts, schedule.ts, presets.ts, csv.ts
-  messages.ts   ← every user-facing error text, copied from the Error messages table
+  engine/       amortize.ts, parse.ts, validate.ts       ← pure functions, no DOM
+  config/       defaults.ts, schema.ts, loadConfig.ts    ← reads and validates public/config.json
+  ui/           app.ts (wiring), form.ts, results.ts, schedule.ts, presets.ts,
+                csv.ts, format.ts, layout.ts, styles.css
+  messages.ts   ← every user-facing text; error texts match the Error messages table
   main.ts
 public/
   config.json   ← the Admin edits this file
 tests/
-  unit/         engine, validation, parsing, config, CSV
+  unit/         amortize, parse, validate, config, csv, ui (happy-dom), setup
 ```
 
 The engine stays pure so tests can prove its correctness independently of the UI. All error texts live in one module so the app and the tests use the same strings as the [Error messages table](user-stories.md#error-messages).
@@ -152,9 +162,11 @@ The exact wording of every message is in the [Error messages table](user-stories
 | Non-finite or negative result | E10, details logged to the console. |
 | Broken or missing `config.json` | App starts with built-in defaults and shows a dismissible banner (E11, E12). |
 | Unexpected runtime error | Global error handler shows E9. The page never goes blank. |
-| Broken shared URL (Stretch, L7) | Valid fields are restored, invalid ones reset to defaults, notice E13. |
+| Broken shared URL (L7, not built) | Planned: valid fields are restored, invalid ones reset to defaults, notice E13. |
 
 ## 6. Delivery milestones (this submission)
+
+Status on 2026-11-06: milestones 1–3 done; milestone 4 partly done (the app runs, tests and builds; the README and the manual check in four browsers are still to do); milestone 5 not started; milestone 6 in progress.
 
 1. **Engine (Core):** parsing, validation, amortization with the rounding rule and loop cap, extra payments. Unit tests for every reference value, every boundary in the stories, and a loop over about 1,000 random inputs that asserts no `NaN`, `Infinity`, negative value or exception. Serves L1, L2, L3, L5, L8.
 2. **Config (Core):** `public/config.json` loading, per-field validation and fallback, presets, footer text. Unit tests with malformed configs. Serves A1, A2, A3, A4.
@@ -200,6 +212,6 @@ The exact wording of every message is in the [Error messages table](user-stories
 
 - **No real access control.** Anyone with the files can change the config. Acceptable for a calculator. If offices need locked presets or saved client quotes, a later version needs a small backend with authentication.
 - **Rates are entered, not fetched.** Avoids paid APIs and stale or misleading "live" rates. The Admin maintains presets.
-- **Not financial advice.** A configurable disclaimer is shown on screen (and on printed quotes once L7/M2 are built).
+- **Not financial advice.** A configurable disclaimer is shown on screen. This build has no printed quote (L7 and M2 are not built), and the CSV export does not include the disclaimer.
 - **Tiny loans at high rates.** Cent rounding can stop a tiny loan from amortizing. A loan of 1 at 30% over 40 years would pay 0.03 a month, all of it interest, and then a balloon of 1.03 in the final month. Users would read that as a normal loan, so the app rejects it with E7 instead (see §3).
 - **Future work** is listed in §2.2 under "Not in this build".
