@@ -72,6 +72,7 @@ What the app does today is tracked story by story in [docs/user-stories.md](docs
 | Implemented | L1, L2, L3, L5, L8, M1, A1, A2, A3, A4 |
 | Not implemented (Core) | **L10**: built and checked in Chromium (360 px, keyboard focus), not yet checked by hand in Chrome, Edge, Firefox and Safari. **A5**: runs, tests and builds as described above; the network check below was done in Chromium only. |
 | Not implemented (Stretch / not in this build) | L4, L6, L7, L9, L11, L12, M2, M3, M4, A6, A7: comparison, affordability, sharing and printing, housing costs and the others |
+| Not implemented (Future, needs a server) | L13, M5, M6, A8, A9, A10, A11: live market rates, saved client quotes, sign-in, server-side role checks, a settings page and a change log. Designed in [docs/product-plan.md §10](docs/product-plan.md#10-future-architecture); this submission stays fully local. |
 
 **Network check (A5.4):** Chromium on 6 November 2026, run through Playwright. Loading the app, choosing a product, entering an extra payment, switching to the yearly view and downloading the CSV made exactly 4 requests, all to the app's own origin: the page, its JS and CSS, and `config.json`.
 

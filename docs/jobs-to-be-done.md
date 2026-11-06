@@ -58,6 +58,12 @@ When I'm viewing a home or talking to an agent away from my desk, I want to chec
 - **Today:** Rough mental arithmetic, or waiting until home to work it out properly.
 - **What goes wrong:** Mental estimates are wrong by large amounts, and by the time the real figures are known the chance to ask questions or make an offer has passed.
 
+### J-19 (Loanee). Base my numbers on today's rates
+When I'm working out what a loan will cost me, I want to know the rates lenders are offering right now, so I can base my decision on realistic numbers.
+
+- **Today:** Search lenders' websites one by one, or use a rate remembered from the news or from a friend's loan.
+- **What goes wrong:** Rates change weekly, so remembered rates are often out of date, and advertised "from" rates hide what most people actually get. A plan built on the wrong rate falls apart at the bank.
+
 ---
 
 ## Manager jobs
@@ -79,6 +85,18 @@ When a meeting with a client ends, I want to give them a record of the figures w
 
 - **Today:** A printed spreadsheet or handwritten notes.
 - **What goes wrong:** The disclaimer and date are often missing, which is a compliance risk, and handwritten figures get misread.
+
+### J-17 (Manager). Pick up where I left off with a client
+When a client comes back days later to continue, I want to pick up exactly the figures I gave them, so I can carry on without redoing the work or contradicting myself.
+
+- **Today:** Look for the spreadsheet saved on my own computer under the client's name, or redo the figures from my notes.
+- **What goes wrong:** Files are lost or saved under different names, colleagues can't find them when I'm away, and redone figures differ slightly from the first ones, which costs the client's trust.
+
+### J-18 (Manager). Keep my clients' figures private
+When I keep figures for my clients, I want them seen only by me and the colleagues who serve those clients, so I can protect my clients' privacy and keep their trust.
+
+- **Today:** Spreadsheets on personal laptops and shared drives, sometimes emailed around.
+- **What goes wrong:** Anyone with access to the drive can open any client's file, laptops get lost, and nobody can say who has seen what.
 
 ---
 
@@ -102,6 +120,18 @@ When budgets are tight or policy forbids sending clients' financial details to o
 - **Today:** Pay for a vendor's quoting software or use free online calculators.
 - **What goes wrong:** Vendor tools cost money and lock the office in. Free online calculators may send clients' figures to third parties.
 
+### J-15 (Admin). Control who can change what we quote
+When our loan products, rates or required wording need to change, I want only the people responsible for them to be able to make the change, so I can be sure nobody alters what clients are quoted by mistake or on purpose.
+
+- **Today:** A master template on a shared drive that anyone with access can edit.
+- **What goes wrong:** Well-meaning colleagues "fix" a rate or shorten the disclaimer, and the office quotes the wrong figures until someone notices.
+
+### J-16 (Admin). Find out who changed a setting and when
+When a figure we quoted turns out to be wrong, I want to find out who changed which setting and when, so I can correct it and show our compliance team what happened.
+
+- **Today:** Ask around the office and compare old copies of the template.
+- **What goes wrong:** Nobody remembers exactly, old copies have been overwritten, and the office cannot show its regulator a reliable history.
+
 ---
 
 ## Job-to-story map
@@ -120,7 +150,12 @@ Every story serves exactly one job, and every job has at least one story. Status
 | J-8 | Manager | M4 |
 | J-9 | Manager | M1 |
 | J-10 | Manager | M2, M3 |
-| J-11 | Admin | A1, A2, A3 |
+| J-11 | Admin | A1, A2, A3, A10 |
 | J-12 | Admin | A4 |
 | J-13 | Admin | A5, A6, A7 |
 | J-14 | Loanee | L10 |
+| J-15 | Admin | A8, A9 |
+| J-16 | Admin | A11 |
+| J-17 | Manager | M5 |
+| J-18 | Manager | M6 |
+| J-19 | Loanee | L13 |

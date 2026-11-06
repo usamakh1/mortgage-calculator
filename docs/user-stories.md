@@ -8,7 +8,7 @@ Each story uses the form "As a [role], I want [capability], so that [benefit]." 
 
 Each story carries four labels:
 - **Priority** is the product view (MoSCoW: Must, Should, Could).
-- **Scope** is the plan for this submission (Core, Stretch, Not in this build). See [Product plan §2.2](product-plan.md#22-scope-for-this-submission).
+- **Scope** is the plan for this submission (Core, Stretch, Not in this build), or **Future** for stories that need a server and are described for a later version. See [Product plan §2.2](product-plan.md#22-scope-for-this-submission).
 - **Serves** is the job from [Jobs To Be Done](jobs-to-be-done.md).
 - **Status** describes what the app does today (checked on 6 November 2026). A story is Implemented only when every one of its acceptance criteria passes.
 
@@ -71,6 +71,17 @@ This table is the single source of every message's wording. The app reads the te
 | E18 | Down payment percentage outside 0 to less than 100 | Enter a down payment between 0 and 100%. | Under the field | L12 |
 | E19 | Clipboard access is blocked | Could not copy the link automatically. Select the link below and copy it. | Next to the Copy link button | L7 |
 | E20 | Property tax, insurance or fees negative or non-numeric | Enter an amount of 0 or more. | Under the field | L9 |
+| E21 | Saving a quote while the server cannot be reached (Future) | The quote could not be saved because the server is not reachable. Your inputs are kept; please try again. | Next to Save quote | M5 |
+| E22 | A saved quote does not exist or was deleted (Future) | This quote could not be found. It may have been deleted, or the link is wrong. | Notice above the form | M5 |
+| E23 | Saving while inputs are invalid (Future) | Fix the highlighted fields before saving. | Next to the disabled Save quote button | M5 |
+| E24 | Wrong email or password (Future) | The email or password is not correct. | Sign-in form | M6, A8 |
+| E25 | Too many failed sign-in attempts (Future) | Too many failed sign-in attempts. Try again in 15 minutes. | Sign-in form | M6, A8 |
+| E26 | Session expired (Future) | Your session has expired. Sign in again to continue; your inputs are kept. | Sign-in form | M6, A8 |
+| E27 | Signed in without permission for the page or record (Future) | You do not have permission to see this page. | Page | M6, A9, A11 |
+| E28 | Settings changed by someone else while editing (Future) | These settings were changed by someone else while you were editing. Reload to see the latest version; your changes were not saved. | Settings page | A10 |
+| E29 | Market rates unavailable or too slow (Future) | Current market rates are not available right now. You can still enter a rate yourself. | Today's rates panel | L13 |
+| E30 | Market rates older than the allowed age (Future) | These rates are from {date and time} and may be out of date. | Today's rates panel | L13 |
+| E31 | A settings value outside its allowed range (Future) | Enter a value between {min} and {max}. | Under the settings field | A10 |
 
 Order of checks: field messages (E1, E2, E4, E5, E6) first, each field on its own. E3 only appears when the home price and down payment are each valid. E7 only appears when every field is valid.
 
@@ -265,6 +276,23 @@ As a Loanee, I want to enter my down payment as a percentage of the home price, 
 4. Given percent mode with 20 entered, when I change the home price to 400,000, then the loan amount changes to 320,000.00.
 5. Given percent mode, when I enter 100, -1 or `abc`, then E18 appears and the results area shows E8.
 
+### L13. See today's market rates, with source and time
+**Priority:** Should · **Scope:** Future · **Serves:** J-19 · **Status:** Not implemented
+
+As a Loanee, I want to see the rates lenders are offering today, with where they come from and when, so that I can base my numbers on realistic rates.
+
+The rates come from a market-rate source queried by the office's server, never directly by the browser (see [Product plan §10](product-plan.md#10-future-architecture)).
+
+**Acceptance criteria**
+1. Given the rate source reports 6.12% for a 30-year fixed loan, from source "Example Rates Feed" at 09:30 on 6 November 2026, when the page loads, then a "Today's rates" panel shows "30-year fixed: 6.12%" with "Source: Example Rates Feed, November 6, 2026, 9:30 AM".
+2. Given that panel, when I choose "Use this rate", then the rate field shows 6.12, every result updates, and the loan product selector shows "Custom".
+3. Given the rate source cannot be reached or returns an error, when the page loads, then the panel shows E29, the rate field stays editable with its default value, and every result is calculated as it is today.
+4. Given the rate source does not answer within 5 seconds, when the page loads, then the calculator works normally in the meantime and the panel shows E29 after 5 seconds.
+5. Given the latest rates are older than the maximum age set by the Admin (default 24 hours), when the page loads, then E30 appears next to them and "Use this rate" still works.
+6. Given the source reports a rate outside the configured limits (for example 45%) or a value that is not a number, when the page loads, then that rate is not shown, the valid ones are, and the problem is logged on the server.
+7. Given any rate is shown, when I look at it, then its source and time are shown with it. A rate without a source or a time is never shown.
+8. Given I have entered my own figures, when rates are loaded, then the request for rates contains none of my inputs.
+
 ---
 
 ## Manager stories
@@ -322,6 +350,40 @@ As a Manager, I want to add several presets to the comparison in one step, so th
 2. Given 3 presets are ticked, when I look at the fourth, then its checkbox is disabled.
 3. Given 2 comparison columns already exist, when I try to add 2 products, then E14 appears and nothing is added.
 4. Given a product comparison, when I print it, then the printout includes the disclaimer and the date prepared.
+
+### M5. Save a client quote and reopen it later
+**Priority:** Should · **Scope:** Future · **Serves:** J-17 · **Status:** Not implemented
+
+As a Manager, I want to save a client's quote and open it again later, so that I can continue with the exact figures I gave them.
+
+Requires a backend API and signing in (M6).
+
+**Acceptance criteria**
+1. Given I am signed in and the inputs are valid, when I click "Save quote" and enter the client reference "Smith 2026-11", then the quote is saved with all inputs, the selected loan product with its rate and term, the date and my name, and "Quote saved: Smith 2026-11" appears.
+2. Given the saved quote "Smith 2026-11", when I open it from "Saved quotes" a week later, then the inputs, the product and every result are identical to when it was saved.
+3. Given the product in a saved quote was changed or removed by the Admin after saving, when I open the quote, then the stored rate and term are used and a note says "This quote used 15-year fixed at 5.75%, which has changed since."
+4. Given any input is invalid, when I look at "Save quote", then it is disabled and E23 is shown next to it.
+5. Given the server cannot be reached, when I click "Save quote", then E21 appears, the inputs stay on screen, and the quote is not listed as saved.
+6. Given a link to a quote that does not exist or was deleted, when I open it, then E22 appears and the calculator opens with the default values.
+7. Given a saved quote, when the Admin inspects what is stored, then the client is identified only by the reference I typed. There are no fields for the client's name, address, income or other personal details.
+8. Given a quote saved by a colleague in my office, when I open "Saved quotes", then it is listed. Quotes from other offices are never listed (M6.5).
+
+### M6. Sign in to reach saved client quotes
+**Priority:** Must · **Scope:** Future · **Serves:** J-18 · **Status:** Not implemented
+
+As a Manager, I want to sign in before I can see saved client quotes, so that only my office can see our clients' figures.
+
+The calculator itself stays usable without signing in. Only saved quotes need it.
+
+**Acceptance criteria**
+1. Given a Manager account in the office "Riverside Mortgages", when I sign in with the correct email and password, then "Saved quotes" opens and lists that office's quotes.
+2. Given a wrong password or an unknown email, when I sign in, then E24 appears, the password field is cleared, and the message does not say which of the two was wrong.
+3. Given 5 failed sign-in attempts in a row for one account, when I try again, then E25 appears, and the account cannot sign in for 15 minutes, even with the correct password.
+4. Given I have been inactive for 30 minutes, when I save or open a quote, then E26 appears, I am asked to sign in, and the inputs on screen are kept. After signing in, I can repeat the action.
+5. Given a link to a quote from another office, when I open it while signed in, then E27 appears and the server returns none of that quote's figures.
+6. Given I am not signed in, when I use the calculator, then everything that works without a server today still works.
+7. Given I click "Sign out", when I then open "Saved quotes", then I am asked to sign in again.
+8. Given any sign-in attempt, when the server stores or logs it, then the password never appears in plain text.
 
 ---
 
@@ -427,6 +489,58 @@ As an Admin, I want to publish the app to a free static host, so that colleagues
 **Acceptance criteria**
 1. Given the repository is on GitHub with Pages enabled, when I push to `main`, then a GitHub Actions workflow builds the app and publishes it at `https://<user>.github.io/<repo>/`, where it loads `config.json` from that sub-path.
 2. Given the README, when I read the deployment section, then the steps are listed and the local run does not depend on them.
+
+### A8. Sign in before changing settings
+**Priority:** Must · **Scope:** Future · **Serves:** J-15 · **Status:** Not implemented
+
+As an Admin, I want to sign in before I can change any setting, so that only the people responsible can change what the office quotes.
+
+**Acceptance criteria**
+1. Given an Admin account, when I sign in with the correct email and password, then the "Settings" page opens.
+2. Given a wrong password or an unknown email, when I sign in, then E24 appears and the password field is cleared. After 5 failed attempts in a row, E25 appears and the account is locked for 15 minutes (the same rules as M6.2–M6.3).
+3. Given my session expires while I am editing settings, when I click "Save", then E26 appears, nothing is saved, and my unsaved edits are still in the form. After signing in again, I can save them.
+4. Given I click "Sign out", when I go back to "Settings", then I am asked to sign in.
+5. Given any sign-in attempt, when the server stores or logs it, then the password never appears in plain text.
+
+### A9. Only Admins can change settings
+**Priority:** Must · **Scope:** Future · **Serves:** J-15 · **Status:** Not implemented
+
+As an Admin, I want the server to refuse settings changes from anyone without the Admin role, so that hiding a button is never the only protection.
+
+**Acceptance criteria**
+1. Given a signed-in Manager, when they open "Settings", then E27 appears and no setting is shown.
+2. Given a request to change a setting sent straight to the server, without the app, with a Manager's session or with no session, when it arrives, then the server refuses it (403 or 401), nothing changes, and the refused attempt is recorded in the change log (A11.3).
+3. Given a signed-in Admin, when they open "Settings", then every setting is shown and can be changed.
+4. Given an Admin's role is removed while they are signed in, when they next click "Save", then E27 appears and nothing is saved.
+
+### A10. Change settings in the app instead of editing a file
+**Priority:** Should · **Scope:** Future · **Serves:** J-11 · **Status:** Not implemented
+
+As an Admin, I want to change the office's settings on a settings page, so that I can keep the calculator correct without editing a JSON file or asking a developer.
+
+The settings page covers everything `public/config.json` covers today, with the same rules (A1–A4).
+
+**Acceptance criteria**
+1. Given a signed-in Admin, when I open "Settings", then I see the office name, disclaimer, currency, locale, default values, limits and loan products, each with its current value.
+2. Given I change the office name to "Riverside Home Loans" and click "Save", when a Manager reloads the calculator, then the header and footer show "Riverside Home Loans".
+3. Given I add the loan product "20-year fixed" at 6.25% for 20 years and click "Save", when a Manager reloads the calculator, then it is listed in the "Loan product" selector.
+4. Given I enter a value outside its allowed range (for example a maximum rate of 31), when I click "Save", then E31 appears under that field ("Enter a value between 0 and 30.") and nothing is saved.
+5. Given I enter currency "XYZ", a duplicate product id, or a product at 35%, when I click "Save", then a message under that field names the problem, using the same rules as today's config (A1, A2), and nothing is saved.
+6. Given another Admin saved changes after I opened "Settings", when I click "Save", then E28 appears and their changes are not overwritten.
+7. Given the office name or disclaimer contains markup such as `<b>x</b>`, when it is saved and shown in the calculator, then it appears as literal text (A3.2 still holds).
+
+### A11. See a log of every settings change
+**Priority:** Should · **Scope:** Future · **Serves:** J-16 · **Status:** Not implemented
+
+As an Admin, I want a log of every settings change, so that I can find out who changed what and when.
+
+**Acceptance criteria**
+1. Given the Admin "a.khan" changed the rate of "15-year fixed" from 5.75 to 5.9 on 6 November 2026 at 10:15, when I open "Change log", then an entry shows "a.khan", "November 6, 2026, 10:15 AM", "presets: 15-year fixed, ratePercent", old value "5.75" and new value "5.9".
+2. Given I save changes to three values at once, when I open "Change log", then there are exactly three new entries. A save with no changes adds none.
+3. Given a refused change (A9.2), when I open "Change log", then it is listed as "refused", with who sent it (or "not signed in") and when.
+4. Given the change log, when I look for a way to edit or delete an entry, then there is none, and the server refuses any request to change or delete entries.
+5. Given a signed-in Manager, when they open "Change log", then E27 appears.
+6. Given more than 50 entries, when I open "Change log", then the newest come first, 50 per page.
 
 ---
 

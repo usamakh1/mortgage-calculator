@@ -59,6 +59,7 @@ The assignment allows 2 to 4 hours, and every story marked Implemented must pass
 | **Core (will build and test)** | L1, L2, L3, L5, L8, L10, M1, A1, A2, A3, A4, A5 | A3 covers the on-screen footer only. A5 covers local run, unit tests and build. L10 is verified by a manual check in Chrome, Edge, Firefox and Safari, written up in the README. L8.6 is verified by boundary and extreme-value unit tests plus a loop over about 1,000 random inputs. |
 | **Stretch (only if time allows)** | L4, L7, M2, A6 | A6 is a small Playwright smoke test on Chromium, Firefox and WebKit plus the "no external requests" check. |
 | **Not in this build (kept as specified future work)** | L6, L9, L11, L12, M3, M4, A7 | A7 is the GitHub Pages deployment. Also not in this build: the axe-core accessibility check, the 10,000-run fuzz test and the 95% coverage target. |
+| **Future (needs a server, see §10)** | L13, M5, M6, A8, A9, A10, A11 | Live market rates, saved client quotes, sign-in, role checks on the server, a settings page and a change log. Specified so the next version is clear; none of it is in this submission. |
 
 **Priority vs. scope.** MoSCoW priority (Must, Should, Could) is the product view. It says how much the feature matters to users. The tier above is the plan for this submission. So L4, L7 and M2 stay "Must" for the product even though they are Stretch here. L11 is a Should and L12 a Could, and neither is built.
 
@@ -70,6 +71,7 @@ The assignment allows 2 to 4 hours, and every story marked Implemented must pass
 | Core, but not yet Implemented | L10 (built and checked in Chromium; manual check in Chrome, Edge, Firefox and Safari pending), A5 (runs, tests and builds from a fresh clone; the network check was done in Chromium through Playwright, not by hand) |
 | Stretch, not built | L4, L7, M2, A6 |
 | Not in this build | L6, L9, L11, L12, M3, M4, A7 |
+| Future (needs a server) | L13, M5, M6, A8, A9, A10, A11 |
 
 ## 3. Calculation rules
 
@@ -214,4 +216,20 @@ Status on 2026-11-06: milestones 1–3 done; milestone 4 partly done (the app ru
 - **Rates are entered, not fetched.** Avoids paid APIs and stale or misleading "live" rates. The Admin maintains presets.
 - **Not financial advice.** A configurable disclaimer is shown on screen. This build has no printed quote (L7 and M2 are not built), and the CSV export does not include the disclaimer.
 - **Tiny loans at high rates.** Cent rounding can stop a tiny loan from amortizing. A loan of 1 at 30% over 40 years would pay 0.03 a month, all of it interest, and then a balloon of 1.03 in the final month. Users would read that as a normal loan, so the app rejects it with E7 instead (see §3).
-- **Future work** is listed in §2.2 under "Not in this build".
+- **Future work** is listed in §2.2 under "Not in this build" and "Future". The server-based stories are described in §10.
+
+## 10. Future architecture
+
+**This submission stays fully local.** It has no backend, no accounts and no network requests besides its own files and `config.json`, and nothing below is built. This section describes how the Future stories (L13, M5, M6, A8–A11) would be added without breaking what exists.
+
+| Area | Plan | Why |
+|---|---|---|
+| **Backend** | A small API service and a database (for example Node.js with SQLite or PostgreSQL) that **the office hosts itself**. The static front end stays as it is; the server adds endpoints for sign-in, settings, the change log, saved quotes and market rates. | J-13 says the office wants no costs and no client data at third parties, so the server must be self-hosted, not a paid cloud service. |
+| **Calculation** | Stays in the browser, using the same engine. When a quote is saved, the server validates the inputs with the same rules and recalculates with the same engine, so stored figures match what the Manager saw (M5.2). | One engine, one set of rules, no second implementation to drift. |
+| **Authentication** | Email and password for Managers and Admins only. Passwords stored as slow salted hashes (bcrypt or Argon2), never in plain text or logs (M6.8, A8.5). Sessions in HTTP-only, secure, same-site cookies that expire after 30 minutes without activity (M6.4). Lockout for 15 minutes after 5 failed attempts (M6.3). Loanees never sign in. | Covers the error cases in M6 and A8 with standard, well-understood mechanisms. |
+| **Authorisation** | Two roles, Manager and Admin, each tied to an office. Every request is checked on the server: settings and the change log need the Admin role (A9), quotes are only returned to users of the same office (M6.5). | Checks in the browser can be bypassed; checks on the server cannot. |
+| **Settings and change log** | `config.json` becomes the starting data for a settings table. The same validation as today (A1–A4) runs on save (A10). Every change writes an append-only log entry with who, when, old and new value (A11). | Admins no longer edit files, and every change can be traced. |
+| **Market rates** | The server, not the browser, queries a licensed market-rate source, checks each rate against the configured limits, and caches it with its source and time (L13). If the source fails or is slow, manual entry works exactly as now. | Keeps API keys off users' devices, never sends user inputs to the source, and keeps the calculator working when the source is down. |
+| **Privacy** | Data minimisation: a saved quote holds only a client reference, no personal details (M5.7). Loanee inputs are never sent to the server. HTTPS only. A retention period for saved quotes, with deletion after it, and regular backups. | Saved quotes are the first personal-adjacent data the app would hold; collecting as little as possible is the strongest protection. |
+
+**What stays the same:** the calculator works without signing in and without the server (M6.6, L13.3), and every Implemented story keeps passing its criteria.

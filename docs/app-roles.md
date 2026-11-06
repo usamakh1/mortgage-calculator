@@ -73,6 +73,18 @@ Roles are responsibilities, not logins. This is a fully client-side app with no 
 
 If a future version needs locked presets, saved client files or audit trails, it needs a backend with real authentication. That is recorded as future work in the [Product plan](product-plan.md#9-risks-and-future-work), not faked in v1.
 
+## When there is a server (Future)
+
+The Future stories (L13, M5, M6, A8–A11) add a small server that the office hosts itself. Roles then become real accounts for the Manager and the Admin; the Loanee never needs one. The "must never" rules move from "impossible by design" to "enforced by the server on every request":
+
+| Role | Must never | How the server would enforce it |
+|---|---|---|
+| Loanee | Have inputs sent off their device or stored outside their browser | The calculation stays in the browser. The server only receives what a Manager deliberately saves (M5), and a request for market rates carries none of the user's inputs (L13.8). Loanees have no account, so there is nothing to link inputs to. |
+| Manager | See figures without the disclaimer; have a client's details stored or sent | A saved quote holds only a client reference, no personal fields (M5.7). The server returns a quote only to a signed-in user of the same office, checked on every request, not only by hiding links (M6.5). Sessions expire after 30 minutes without activity (M6.4). The disclaimer is still added when a quote is shown. |
+| Admin | Collect, receive or view what users enter; make config text run as code | The server never receives Loanee inputs, so there is nothing to view. Admins see settings and the change log only. Every settings change is checked for the Admin role on the server (A9.2), validated with today's config rules (A10.5), and recorded in a log that cannot be edited or deleted (A11.4). Office name and disclaimer are still shown as plain text (A10.7). |
+
+Hiding a button is only for convenience. The protection is the server refusing the request (A9.2, M6.5). The current submission has none of this: it stays fully local (see [Product plan §10](product-plan.md#10-future-architecture)).
+
 ## What differs in the app
 
 Only the rows where roles differ are shown. Everything else (calculating, the schedule, extra payments and so on) is the same screen for Loanee and Manager.
