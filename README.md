@@ -81,8 +81,8 @@ What the app does today is tracked story by story in [docs/user-stories.md](docs
 
 | Status | Stories |
 |---|---|
-| Implemented | L1, L2, L3, L5, L8, M1, A1, A2, A3, A4 |
-| Not implemented (Core) | **L10**: built and checked in Chromium (360 px, keyboard focus), not yet checked by hand in Chrome, Edge, Firefox and Safari. **A5**: runs, tests and builds as described above; the network check below was done in Chromium only. |
+| Implemented | L1, L2, L3, L5, L8, M1, A1, A2, A3, A4, A5 |
+| Not implemented (Core) | **L10**: all manual checks passed in Chrome, Edge, Firefox and Safari (see Browser check below); it stays Not implemented only because L10.1 also requires the browser versions in this record, and they were not noted. |
 | Not implemented (Stretch / not in this build) | L4, L6, L7, L9, L11, L12, M2, M3, M4, A6, A7: comparison, affordability, sharing and printing, housing costs and the others |
 | Not implemented (Future) | L13, M5, M6, A8, A9, A10, A11: live market rates, saved client quotes, sign-in, server-side role checks, a settings page and a change log ([§10 Future architecture](docs/product-plan.md#10-future-architecture)). L14, L15, L16: an understanding check, plain-language explanations and cost in everyday terms ([§11 Future bets](docs/product-plan.md#11-future-bets)). This submission stays fully local. |
 
@@ -95,9 +95,9 @@ This submission stays fully local: no server, no accounts. The next steps are sp
 
 ## Checks
 
-**Network check (A5.4):** Chromium on 6 November 2026, run through Playwright. Loading the app, choosing a product, entering an extra payment, switching to the yearly view and downloading the CSV made exactly 4 requests, all to the app's own origin: the page, its JS and CSS, and `config.json`.
+**Network check (A5.4):** done by hand on 6 November 2026 in current Chrome, Edge, Firefox and Safari with the browser's Network panel open: only requests to `localhost` (the page, its JS and CSS, and `config.json`), nothing external. The same check run through Playwright in Chromium recorded exactly those 4 requests.
 
-**Browser check (L10):** not yet done by hand. Planned for the current Chrome, Edge, Firefox and Safari, at desktop width and at 360 px with the device toolbar, keyboard only.
+**Browser check (L10):** done by hand on 6 November 2026 in the current Chrome, Edge, Firefox and Safari, as reported by the developer: all 13 checks passed, at desktop width and at 360 px, including the keyboard-only check and the Network panel check. The browser versions were not recorded.
 
 **Tests:** `npm test` runs 334 unit tests: engine, parsing, validation, config, CSV, the UI with happy-dom, and startup and error handling.
 
@@ -128,7 +128,7 @@ The AI sessions are in [transcripts/](transcripts/) (overview: [transcripts/INDE
 
 - **Roles are responsibilities, not logins.** The app has no server, so any login would be fake security. The Admin acts by editing `public/config.json`; Loanee and Manager use the same screen.
 - **Not financial advice.** Results are estimates, and the disclaimer says so on screen. There is no printed quote, and the CSV export does not include the disclaimer.
-- **Browsers not checked by hand yet:** see Status. Only Chromium was checked, by automation.
+- **Browser check:** done by hand in Chrome, Edge, Firefox and Safari on 6 November 2026 (see Checks); the browser versions were not recorded.
 - **The loan:** fixed rate, monthly payments, fully amortizing. The first payment is in the month after today. Amounts are rounded to cents, each month, half-up, and the final payment absorbs the rounding.
 - **Input:** `,` is the thousands separator and `.` the decimal point, whatever the display locale. The term is in whole years. Full input rules are in [docs/user-stories.md](docs/user-stories.md).
 - **Privacy:** the app stores nothing (no local storage, cookies or inputs in the URL), and sends nothing except loading its own files.

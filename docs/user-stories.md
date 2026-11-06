@@ -248,7 +248,7 @@ As a Loanee, I want to add property tax, home insurance and monthly fees, so tha
 6. Given the results of criterion 1, when I change the insurance to 2,400, then the total updates to 2,348.65.
 
 ### L10. Use it on my phone and in any current browser
-**Priority:** Must · **Scope:** Core · **Serves:** J-14 · **Status:** Not implemented. Built and checked in Chromium only (360 px layout, visible focus); not yet verified by hand in Chrome, Edge, Firefox and Safari, and the README browser record (L10.1) does not exist yet.
+**Priority:** Must · **Scope:** Core · **Serves:** J-14 · **Status:** Not implemented. All 13 manual checks passed by hand on 6 November 2026 in current Chrome, Edge, Firefox and Safari (desktop, 360 px, keyboard only), as reported by the developer. Only L10.1 is not met yet: the README record is missing the browser versions.
 
 As a Loanee, I want the calculator to work on my phone and in whichever current browser I use, so that I can check numbers wherever I am.
 
@@ -518,7 +518,7 @@ As an Admin, I want clear feedback when my config is wrong, so that I can fix it
 8. Given each malformed config above (unit tests), when `loadConfig` runs, then it never throws and returns a complete, valid config.
 
 ### A5. Run and build locally with free tools
-**Priority:** Must · **Scope:** Core · **Serves:** J-13 · **Status:** Not implemented. A5.1–A5.3 pass (checked from a fresh clone). A5.4: the README records a network check done in Chromium through Playwright, not by hand in the four browsers.
+**Priority:** Must · **Scope:** Core · **Serves:** J-13 · **Status:** Implemented
 
 As an Admin, I want to run, test and build the app with free tools only, so that we have no cost or third-party data risk.
 

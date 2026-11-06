@@ -37,7 +37,7 @@ This is the full product plan. Each item says whether it exists in this build.
 7. Effect of extra monthly payments: interest saved and months saved. **Built.**
 8. Shareable URL that restores a scenario; printable quote summary. **Not built** (L7, M2, M3).
 9. Admin config file: currency, locale, defaults, input limits, loan product presets, disclaimer. **Built.**
-10. Works in current Chrome, Edge, Firefox and Safari, on phone and desktop widths. **Built; checked in Chromium only.** The manual check in the four browsers is still to be done (L10).
+10. Works in current Chrome, Edge, Firefox and Safari, on phone and desktop widths. **Built.** Checked by hand in all four browsers on 6 November 2026 (all checks passed); L10 stays Not implemented only because the browser versions were not recorded.
 
 **Should have** (none built)
 - Estimated monthly housing cost including property tax, home insurance and fees.
@@ -67,8 +67,8 @@ The assignment allows 2 to 4 hours, and every story marked Implemented must pass
 
 | Status | Stories |
 |---|---|
-| Implemented (every criterion passes) | L1, L2, L3, L5, L8, M1, A1, A2, A3, A4 |
-| Core, but not yet Implemented | L10 (built and checked in Chromium; manual check in Chrome, Edge, Firefox and Safari pending), A5 (runs, tests and builds from a fresh clone; the network check was done in Chromium through Playwright, not by hand) |
+| Implemented (every criterion passes) | L1, L2, L3, L5, L8, M1, A1, A2, A3, A4, A5 |
+| Core, but not yet Implemented | L10 (all manual checks passed in Chrome, Edge, Firefox and Safari; the browser versions are missing from the README record that L10.1 requires) |
 | Stretch, not built | L4, L7, M2, A6 |
 | Not in this build | L6, L9, L11, L12, M3, M4, A7 |
 | Future | L13, L14, L15, L16, M5, M6, A8, A9, A10, A11 |
@@ -168,7 +168,7 @@ The exact wording of every message is in the [Error messages table](user-stories
 
 ## 6. Delivery milestones (this submission)
 
-Status on 2026-11-06: milestones 1–3 done; milestone 4 partly done (the app runs, tests and builds; the README and the manual check in four browsers are still to do); milestone 5 not started; milestone 6 in progress.
+Status on 2026-11-06: milestones 1–4 done (the browser versions are still missing from the L10 record); milestone 5 not started; milestone 6 done.
 
 1. **Engine (Core):** parsing, validation, amortization with the rounding rule and loop cap, extra payments. Unit tests for every reference value, every boundary in the stories, and a loop over about 1,000 random inputs that asserts no `NaN`, `Infinity`, negative value or exception. Serves L1, L2, L3, L5, L8.
 2. **Config (Core):** `public/config.json` loading, per-field validation and fallback, presets, footer text. Unit tests with malformed configs. Serves A1, A2, A3, A4.
