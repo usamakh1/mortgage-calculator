@@ -40,4 +40,9 @@ export const UI_TEXT = {
   payoffDate: 'Payoff date',
   dismiss: 'Dismiss',
   errorMarker: '!',
+  percentSuffix: '%',
+  yearsSuffix: 'years',
+  breakdownHeading: 'Total paid: principal vs. interest',
+  principal: 'Principal',
+  interest: 'Interest',
 } as const;

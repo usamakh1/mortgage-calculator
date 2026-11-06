@@ -7,10 +7,10 @@
 import { calculateLoan, type CalcOutcome, type LoanInput } from '../engine/amortize';
 import { validateInputs, type Field } from '../engine/validate';
 import type { ConfigResult } from '../config/schema';
-import { APP_TITLE, MESSAGES, UI_TEXT } from '../messages';
-import { createForm, FORM_FIELDS } from './form';
+import { MESSAGES, UI_TEXT } from '../messages';
+import { createForm, FORM_FIELDS, type Adornment } from './form';
 import { createFormatters, toInputText } from './format';
-import { createBanner, createFooter } from './layout';
+import { createBanner, createFooter, createHeader } from './layout';
 import { createResults } from './results';
 
 export interface AppDependencies {
@@ -29,26 +29,33 @@ export function createApp(root: HTMLElement, configResult: ConfigResult, deps: A
   const today = deps.today ?? (() => new Date());
   const format = createFormatters(config.currency, config.locale);
 
-  const header = document.createElement('header');
-  header.className = 'site-header';
-  const title = document.createElement('h1');
-  title.textContent = APP_TITLE;
-  const intro = document.createElement('p');
-  intro.className = 'intro';
-  intro.textContent = UI_TEXT.intro;
-  header.append(title, intro);
+  const header = createHeader(config.officeName);
 
-  const form = createForm(FORM_FIELDS, {
-    homePrice: toInputText(config.defaults.homePrice),
-    downPayment: toInputText(config.defaults.downPayment),
-    interestRate: toInputText(config.defaults.ratePercent),
-    termYears: toInputText(config.defaults.termYears),
-  });
+  // Currency symbol from the config currency and locale ("$" before, "€" after in de-DE).
+  const money: Adornment =
+    format.currency.position === 'prefix' ? { prefix: format.currency.symbol } : { suffix: format.currency.symbol };
+  const form = createForm(
+    FORM_FIELDS,
+    {
+      homePrice: toInputText(config.defaults.homePrice),
+      downPayment: toInputText(config.defaults.downPayment),
+      interestRate: toInputText(config.defaults.ratePercent),
+      termYears: toInputText(config.defaults.termYears),
+    },
+    {
+      homePrice: money,
+      downPayment: money,
+      extraPayment: money,
+      interestRate: { suffix: UI_TEXT.percentSuffix },
+      termYears: { suffix: UI_TEXT.yearsSuffix },
+    },
+  );
   const formSection = document.createElement('section');
-  formSection.className = 'form-section';
+  formSection.className = 'card form-section';
   formSection.setAttribute('aria-labelledby', 'form-heading');
   const formHeading = document.createElement('h2');
   formHeading.id = 'form-heading';
+  formHeading.className = 'card-title';
   formHeading.textContent = UI_TEXT.formHeading;
   formSection.append(formHeading, form.element);
 
@@ -59,7 +66,7 @@ export function createApp(root: HTMLElement, configResult: ConfigResult, deps: A
   main.append(formSection, results.element);
 
   const banner = createBanner(notice);
-  root.replaceChildren(...(banner ? [banner] : []), header, main, createFooter(config.officeName, config.disclaimer));
+  root.replaceChildren(header, ...(banner ? [banner] : []), main, createFooter(config.officeName, config.disclaimer));
 
   /** Fields whose message may show: left at least once since they were last valid. */
   const touched = new Set<Field>();

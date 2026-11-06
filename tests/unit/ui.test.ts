@@ -354,3 +354,58 @@ describe('Config banner (A4.6)', () => {
     expect(root.querySelector('.config-banner p')?.textContent).toContain('<b>x</b>');
   });
 });
+
+describe('5d design: header, adornments, principal vs. interest bar', () => {
+  it('the header shows the app name and the configured office name as text', () => {
+    start({ officeName: 'Riverside Mortgages' });
+    const header = root.querySelector('header')!;
+    expect(header.querySelector('h1')?.textContent).toBe('Mortgage Calculator');
+    expect(header.querySelector('.header-office')?.textContent).toBe('Riverside Mortgages');
+  });
+
+  it('no office name → no office label in the header', () => {
+    start();
+    expect(root.querySelector('header .header-office')).toBeNull();
+  });
+
+  it('adornments come from the config currency: "$" before money fields, "%" and "years" after', () => {
+    start();
+    const adornments = (field: Field) =>
+      [...input(field).parentElement!.querySelectorAll('.adornment')].map((a) => [a.className, a.textContent]);
+    expect(adornments('homePrice')).toEqual([['adornment adornment-prefix', '$']]);
+    expect(adornments('downPayment')).toEqual([['adornment adornment-prefix', '$']]);
+    expect(adornments('interestRate')).toEqual([['adornment adornment-suffix', '%']]);
+    expect(adornments('termYears')).toEqual([['adornment adornment-suffix', 'years']]);
+    for (const a of root.querySelectorAll('.adornment')) expect(a.getAttribute('aria-hidden')).toBe('true');
+  });
+
+  it('EUR in de-DE puts "€" after the money fields; PKR shows "PKR" before', () => {
+    start({ currency: 'EUR', locale: 'de-DE' });
+    expect(input('homePrice').parentElement!.querySelector('.adornment-suffix')?.textContent).toBe('€');
+    start({ currency: 'PKR' });
+    expect(input('homePrice').parentElement!.querySelector('.adornment-prefix')?.textContent).toBe('PKR');
+  });
+
+  it('the bar has text labels with amounts and percentages that add up to 100%', () => {
+    start();
+    enter({ homePrice: '300000', downPayment: '0' });
+    expect(root.querySelector('[data-share="principal"]')?.textContent).toBe('$300,000.00 (46%)');
+    expect(root.querySelector('[data-share="interest"]')?.textContent).toBe('$347,515.44 (54%)');
+    expect(root.querySelector('.breakdown-bar')?.getAttribute('aria-hidden')).toBe('true');
+    const widths = [...root.querySelectorAll<HTMLElement>('.breakdown-segment')].map((s) => s.style.width);
+    expect(widths).toEqual(['46%', '54%']);
+  });
+
+  it('at 0% interest the bar is 100% principal and 0% interest', () => {
+    start();
+    enter({ homePrice: '120000', downPayment: '0', interestRate: '0', termYears: '10' });
+    expect(root.querySelector('[data-share="principal"]')?.textContent).toBe('$120,000.00 (100%)');
+    expect(root.querySelector('[data-share="interest"]')?.textContent).toBe('$0.00 (0%)');
+  });
+
+  it('the bar disappears with every other figure when an input is invalid', () => {
+    start();
+    type('homePrice', 'abc');
+    expect(root.querySelector('.breakdown')).toBeNull();
+  });
+});

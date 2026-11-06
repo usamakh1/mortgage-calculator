@@ -28,10 +28,20 @@ export interface FormView {
   setError(field: Field, text: string | null): void;
 }
 
+/** Visual text before or after an input, e.g. "$" or "years". Hidden from screen readers: the label says it. */
+export interface Adornment {
+  prefix?: string;
+  suffix?: string;
+}
+
 export const inputId = (field: Field): string => `field-${field}`;
 export const errorId = (field: Field): string => `field-${field}-error`;
 
-export function createForm(specs: readonly FieldSpec[], initial: Partial<Record<Field, string>>): FormView {
+export function createForm(
+  specs: readonly FieldSpec[],
+  initial: Partial<Record<Field, string>>,
+  adornments: Partial<Record<Field, Adornment>> = {},
+): FormView {
   const form = document.createElement('form');
   form.className = 'loan-form';
   form.noValidate = true;
@@ -64,7 +74,22 @@ export function createForm(specs: readonly FieldSpec[], initial: Partial<Record<
     error.className = 'field-error';
     error.setAttribute('aria-live', 'polite');
 
-    wrapper.append(label, input, error);
+    // Input and its adornments share one bordered box (.input-group).
+    const group = document.createElement('div');
+    group.className = 'input-group';
+    const { prefix, suffix } = adornments[spec.field] ?? {};
+    const adornment = (text: string, side: 'prefix' | 'suffix'): HTMLElement => {
+      const span = document.createElement('span');
+      span.className = `adornment adornment-${side}`;
+      span.setAttribute('aria-hidden', 'true');
+      span.textContent = text;
+      return span;
+    };
+    if (prefix) group.append(adornment(prefix, 'prefix'));
+    group.append(input);
+    if (suffix) group.append(adornment(suffix, 'suffix'));
+
+    wrapper.append(label, group, error);
     form.append(wrapper);
     inputs[spec.field] = input;
     errors[spec.field] = error;
