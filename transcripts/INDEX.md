@@ -1,8 +1,7 @@
 # AI session transcripts
 
 All work was done with **Claude Code**, model **Claude Opus 5.5**, on 6 November 2026.
-Each transcript is exported with Claude Code's own `/export` command and is unedited, except
-that one GitHub token pasted by mistake was replaced with `[REDACTED]`.
+Each transcript is exported with Claude Code's own `/export` command. One GitHub token pasted by mistake was replaced with [REDACTED]; nothing else was changed.
 
 | # | File | Purpose |
 |---|---|---|
@@ -17,9 +16,3 @@ that one GitHub token pasted by mistake was replaced with `[REDACTED]`.
 2. **Session 03** from the start: the corrected rules and the document rework, then the build step by
    step. Each step lists its test cases before any code, and records the mistakes found and fixed.
 3. **Session 02** alongside session 03: the review of each step's output.
-
-## Raw session logs (optional)
-
-Claude Code also keeps the complete raw logs (JSONL) under `~/.claude/projects/`. If
-`raw/session-02.jsonl` and `raw/session-03.jsonl` are present, they are copies of those logs
-with the same token redacted. They contain everything, including tool calls and their output.

@@ -91,15 +91,15 @@ What the app does today is tracked story by story in [docs/user-stories.md](docs
 
 ## Transcripts
 
-The AI sessions are exported in [transcripts/](transcripts/), in order:
+The AI sessions are exported in [transcripts/](transcripts/) (overview: [transcripts/INDEX.md](transcripts/INDEX.md)), in order:
 
 | Session | File(s) | What happened |
 |---|---|---|
 | session-01 | not available | The chat that drafted the first versions of the four planning documents. It was not saved and could not be recovered. Its first prompt is quoted in session-02. |
 | session-02 | [session-02.md](transcripts/session-02.md) | A separate Claude Code session (Claude Opus 5.5) used to analyse the assignment, review the documents and plan the prompts for session-03. |
-| session-03 | [part 1](transcripts/session-03-part1.md) · [part 2](transcripts/session-03-part2.md) · [part 3](transcripts/session-03-part3.md) · [part 4](transcripts/session-03-part4.md) · [part 5](transcripts/session-03-part5.md) | This session: the document fixes and the whole build. It was exported in parts as it went, so later parts repeat the earlier conversation. |
+| session-03 | [session-03.md](transcripts/session-03.md) | This session: the document fixes and the whole build. |
 
-**Edits to the transcripts.** I pasted a GitHub token into session-03 by mistake. In parts 4 and 5 the token was replaced with `[REDACTED]`. In part 3 the rest of that message, including the token, was deleted. Nothing else in the transcripts was changed.
+**Edits to the transcripts.** One GitHub token pasted by mistake was replaced with [REDACTED]; nothing else was changed.
 
 ## Assumptions
 
