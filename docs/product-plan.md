@@ -66,8 +66,8 @@ The assignment allows 2 to 4 hours, and every story marked Implemented must pass
 
 | Status | Stories |
 |---|---|
-| Implemented (every criterion passes) | L1, L2, L3, L5, L8, M1, A2, A3, A4 |
-| Core, but not yet Implemented | L10 (built and checked in Chromium; manual check in Chrome, Edge, Firefox and Safari pending), A1 and A5 (waiting for the README: A1.5, A5.1, A5.4) |
+| Implemented (every criterion passes) | L1, L2, L3, L5, L8, M1, A1, A2, A3, A4 |
+| Core, but not yet Implemented | L10 (built and checked in Chromium; manual check in Chrome, Edge, Firefox and Safari pending), A5 (runs, tests and builds from a fresh clone; the network check was done in Chromium through Playwright, not by hand) |
 | Stretch, not built | L4, L7, M2, A6 |
 | Not in this build | L6, L9, L11, L12, M3, M4, A7 |
 

@@ -325,7 +325,7 @@ As a Manager, I want to add several presets to the comparison in one step, so th
 ## Admin stories
 
 ### A1. Configure locale, currency and defaults
-**Priority:** Must · **Scope:** Core · **Serves:** J-11 · **Status:** Not implemented. All criteria pass except A1.5, which needs the README. Re-check when the README exists.
+**Priority:** Must · **Scope:** Core · **Serves:** J-11 · **Status:** Implemented
 
 As an Admin, I want to set the currency, locale, default values and limits in a config file, so that the calculator fits our market without code changes.
 
@@ -396,7 +396,7 @@ As an Admin, I want clear feedback when my config is wrong, so that I can fix it
 8. Given each malformed config above (unit tests), when `loadConfig` runs, then it never throws and returns a complete, valid config.
 
 ### A5. Run and build locally with free tools
-**Priority:** Must · **Scope:** Core · **Serves:** J-13 · **Status:** Not implemented. A5.2 and A5.3 pass; A5.1 and the README record in A5.4 need the README. Re-check when the README exists.
+**Priority:** Must · **Scope:** Core · **Serves:** J-13 · **Status:** Not implemented. A5.1–A5.3 pass (checked from a fresh clone). A5.4: the README records a network check done in Chromium through Playwright, not by hand in the four browsers.
 
 As an Admin, I want to run, test and build the app with free tools only, so that we have no cost or third-party data risk.
 
